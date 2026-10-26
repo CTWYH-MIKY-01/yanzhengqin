@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="书法进阶·颜勤礼">
+<meta name="theme-color" content="#7a3b2e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>书法进阶练习 · 颜勤礼碑</title>
+<style>
+:root{
+  --primary:#2b2b2b; --muted:#888; --paper:#f6f0e4; --paper2:#ece2cd;
+  --accent:#7a3b2e; --accent2:#a8543f; --gold:#c9a86a; --line:#ddd2bd;
+  --ok:#4a7a5a; --shadow:0 2px 10px rgba(0,0,0,.12);
+  --lock:#a9967b;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;}
+body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;color:var(--primary);
+  overscroll-behavior:none;font-size:15px;
+  /* 宣纸底 + 红棕暖韵云纹 */
+  background-color:var(--paper);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(168,84,63,.07) 0, rgba(168,84,63,.07) 26px, transparent 27px),
+    radial-gradient(circle at 18% 19%, rgba(168,84,63,.05) 0, rgba(168,84,63,.05) 18px, transparent 19px),
+    radial-gradient(circle at 82% 30%, rgba(168,84,63,.06) 0, rgba(168,84,63,.06) 22px, transparent 23px),
+    radial-gradient(circle at 8% 70%, rgba(168,84,63,.05) 0, rgba(168,84,63,.05) 16px, transparent 17px),
+    radial-gradient(circle at 68% 82%, rgba(168,84,63,.06) 0, rgba(168,84,63,.06) 24px, transparent 25px),
+    radial-gradient(circle at 92% 60%, rgba(168,84,63,.05) 0, rgba(168,84,63,.05) 14px, transparent 15px),
+    linear-gradient(180deg,#f6f0e4 0%,#ece2cd 100%);
+  background-attachment:fixed;
+}
+/* 背景书法水印（保留“书法”二字，竖向叠印） */
+body::before{content:'書';position:fixed;left:-26px;bottom:-70px;font-size:280px;
+  font-family:'KaiTi','楷体',serif;color:rgba(122,59,46,.07);z-index:0;pointer-events:none;
+  transform:rotate(-14deg);letter-spacing:-20px;}
+body::after{content:'法';position:fixed;left:78px;bottom:-70px;font-size:280px;
+  font-family:'KaiTi','楷体',serif;color:rgba(122,59,46,.07);z-index:0;pointer-events:none;
+  transform:rotate(-14deg);letter-spacing:-20px;}
+.view{position:relative;z-index:1;display:none;padding:12px 12px 96px;}
+.view.active{display:block;}
+/* 顶部 */
+.topbar{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#7a3b2e,#a8543f);color:#fff;
+  display:flex;align-items:center;gap:8px;padding:10px 10px;box-shadow:var(--shadow);}
+.topbar button{background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:8px;
+  padding:6px 12px;font-size:14px;cursor:pointer;flex-shrink:0;}
+.topbar h1{font-size:16px;margin:0;flex:1;font-weight:600;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar .logo{font-size:18px;flex:none;}
+/* 首页 hero：诏书卷轴风，青底云纹 */
+.hero{position:relative;border-radius:14px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow);
+  background:
+    radial-gradient(circle at 15% 22%, rgba(255,255,255,.16) 0, rgba(255,255,255,.16) 20px, transparent 21px),
+    radial-gradient(circle at 22% 26%, rgba(255,255,255,.12) 0, rgba(255,255,255,.12) 14px, transparent 15px),
+    radial-gradient(circle at 76% 30%, rgba(255,255,255,.14) 0, rgba(255,255,255,.14) 18px, transparent 19px),
+    radial-gradient(circle at 70% 25%, rgba(255,255,255,.10) 0, rgba(255,255,255,.10) 12px, transparent 13px),
+    linear-gradient(135deg,#7a3b2e,#a8543f 55%,#c46a4f);
+  color:#fff;padding:26px 20px;border:1px solid rgba(255,255,255,.25);}
+.hero .t1{font-size:25px;font-weight:700;letter-spacing:2px;margin-bottom:6px;font-family:'KaiTi','楷体',serif;text-shadow:0 1px 3px rgba(0,0,0,.25);}
+.hero .t2{font-size:13px;opacity:.92;line-height:1.7;}
+.hero .deco{position:absolute;right:-8px;bottom:-26px;font-size:130px;opacity:.15;font-family:'KaiTi','楷体',serif;}
+.info-line{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.info-line .chip{background:#fff;border-radius:20px;padding:6px 14px;font-size:13px;box-shadow:var(--shadow);color:#556;} 
+.stage-card{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;cursor:pointer;}
+.stage-card .head{display:flex;align-items:center;gap:12px;padding:14px 14px;}
+.stage-card .badge{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:28px;flex-shrink:0;background:#f2ecdf;}
+.stage-card .info{flex:1;min-width:0;}
+.stage-card .info h3{margin:0;font-size:17px;}
+.stage-card .info p{margin:4px 0 0;font-size:12.5px;color:#a9967b;line-height:1.5;}
+.stage-card .progress{display:flex;align-items:center;gap:8px;padding:0 14px 14px;}
+.stage-card .bar{flex:1;height:6px;background:#e8e0d0;border-radius:3px;overflow:hidden;}
+.stage-card .bar i{display:block;height:100%;width:0;border-radius:3px;}
+.stage-card .progress span{font-size:12px;color:#999;white-space:nowrap;}
+/* 锁定样式 */
+.list-item.locked{opacity:.55;cursor:not-allowed;background:#f6f1e6;}
+.list-item.locked .n{background:#ece2cd;color:#a9967b;}
+.list-item.locked .txt b{color:#a9967b;}
+.lock-tag{color:var(--lock);font-size:13px;flex-shrink:0;}
+/* 鼓励语 */
+.encourage{background:linear-gradient(135deg,#f4e8da,#ecdbc3);border:1px dashed #c9a86a;border-radius:10px;
+  padding:10px 12px;margin-top:10px;font-size:13.5px;color:#7a3b2e;line-height:1.7;display:flex;gap:8px;align-items:flex-start;}
+.encourage .en-ico{font-size:18px;flex-shrink:0;}
+.page-lock-hint{margin-top:6px;font-size:12px;color:#a9967b;}
+/* 按钮 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;
+  border:none;border-radius:10px;font-size:15px;cursor:pointer;padding:10px 16px;}
+.btn.primary{background:var(--accent);color:#fff;}
+.btn.gold{background:var(--gold);color:#3a2a10;}
+.btn.ghost{background:#fff;border:1.5px solid #ccc;color:#555;}
+.btn.block{width:100%;}
+.btn:active{opacity:.85;}
+/* 列表 */
+.list{background:#fff;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px;}
+.list-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid #f2ecdf;cursor:pointer;}
+.list-item:last-child{border-bottom:none;}
+.list-item .n{width:38px;height:38px;border-radius:8px;background:var(--paper2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);flex-shrink:0;}
+.list-item .txt{flex:1;min-width:0;}
+.list-item .txt b{display:block;font-size:15.5px;}
+.list-item .txt small{color:#999;font-size:12px;display:block;margin-top:2px;}
+.list-item .done{color:var(--ok);font-size:14px;flex-shrink:0;}
+.list-item .arrow{color:#bbb;font-size:18px;flex-shrink:0;}
+/* 单元头 */
+.unit-head{background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:14px;margin-bottom:14px;}
+.unit-head .title{font-size:19px;font-weight:700;margin-bottom:6px;}
+.unit-head .desc{font-size:13px;color:#666;line-height:1.6;}
+.unit-head .knots{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;}
+.unit-head .knots span{background:var(--paper2);border-radius:20px;padding:3px 10px;font-size:12px;color:var(--accent);}
+.unit-head .prevnext{display:flex;gap:8px;margin-top:12px;}
+.unit-head .prevnext .btn{flex:1;min-height:42px;font-size:13px;}
+/* 视频 */
+.video-box{background:#141414;border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow);}
+.video-box .vh{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#222;}
+.video-box .vh b{color:#eee;font-size:13px;}
+.video-box .vh button{background:var(--gold);border:none;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;}
+.video-wrap{position:relative;width:100%;background:#000;aspect-ratio:16/9;max-height:260px;}
+.video-wrap iframe{width:100%;height:100%;border:none;display:block;}
+.video-wrap .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#888;height:100%;font-size:13px;gap:8px;}
+.video-wrap .ph .icon{font-size:40px;}
+/* 拍照 */
+.capture-box{background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:14px;margin-bottom:14px;}
+.capture-box .cap-h{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-weight:700;}
+.capture-box .cap-h .ico{font-size:20px;}
+.cam{display:flex;align-items:center;justify-content:center;min-height:170px;background:var(--paper2);border-radius:10px;cursor:pointer;flex-direction:column;gap:8px;color:var(--accent);}
+.cam .big{font-size:42px;}
+.cam .tip{font-size:13px;color:#888;}
+#photoPreview{width:100%;border-radius:10px;margin-top:10px;display:none;}
+#photoPreview.show{display:block;}
+.img-actions{display:flex;gap:8px;margin-top:10px;}
+.img-actions .btn{flex:1;}
+/* 讲评 */
+.comment-box{background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:14px;margin-bottom:14px;}
+.comment-box .ch{font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.score-row .score{font-size:30px;font-weight:700;color:var(--accent);}
+.score-row .stars{color:var(--gold);font-size:20px;letter-spacing:2px;}
+.crit{background:var(--paper);border-radius:8px;padding:10px;font-size:13.5px;line-height:1.75;color:#444;}
+.crit ul{margin:6px 0 0;padding-left:18px;}
+.crit li{margin-bottom:3px;}
+/* 全屏浮层 */
+.overlay{position:fixed;inset:0;background:#000;z-index:999;display:none;flex-direction:column;}
+.overlay.show{display:flex;}
+.overlay .obar{background:#000;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;}
+.overlay .obar button{background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:14px;cursor:pointer;}
+.overlay .obar span{font-size:14px;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 8px;}
+.overlay .ovbody{flex:1;position:relative;}
+.overlay .ovbody iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+/* 统计 */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.stat{background:#fff;border-radius:10px;box-shadow:var(--shadow);padding:12px;text-align:center;}
+.stat b{display:block;font-size:22px;color:var(--accent);}
+.stat span{font-size:12px;color:#999;}
+/* 段标题 */
+.sec-title{font-size:16px;font-weight:700;margin:18px 0 10px;display:flex;align-items:center;gap:8px;}
+.sec-title::before{content:'';width:4px;height:16px;background:var(--accent);border-radius:2px;}
+/* 视频库 */
+.src-card{background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:14px;margin-bottom:12px;}
+.src-card .sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:8px;}
+.src-card .sh b{font-size:15px;}
+.src-card .sh .tag{font-size:11px;background:var(--paper2);color:var(--accent);padding:2px 8px;border-radius:10px;flex-shrink:0;}
+.src-card .st{font-size:13px;color:#555;line-height:1.6;margin-bottom:8px;}
+.src-card .acts{display:flex;gap:8px;flex-wrap:wrap;}
+.src-card .acts button{font-size:12.5px;min-height:38px;}
+/* 选贴 */
+.pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.pick{background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:14px;text-align:center;cursor:pointer;border:2px solid transparent;}
+.pick.sel{border-color:var(--accent);}
+.pick .em{font-size:34px;}
+.pick b{display:block;margin:6px 0 2px;font-size:15px;}
+.pick small{font-size:12px;color:#888;}
+/* toast */
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:88px;background:rgba(0,0,0,.88);color:#fff;
+  padding:10px 20px;border-radius:20px;font-size:14px;z-index:1000;display:none;white-space:nowrap;max-width:90%;}
+/* 空态 */
+.empty{text-align:center;padding:40px 20px;color:#aaa;font-size:14px;line-height:1.8;}
+.hint{font-size:12px;color:#a98b5a;line-height:1.6;background:#fbf3e4;border-radius:8px;padding:8px 10px;margin-bottom:14px;}
+/* 版本署名 */
+.footer-credit{text-align:center;font-size:12px;color:#a9967b;margin:18px 0 24px;letter-spacing:1px;}
+/* 详细讲解 + 朗读 */
+.speak-bar{display:flex;gap:8px;margin-top:12px;}
+.speak-bar .btn{flex:1;min-height:44px;font-size:14px;}
+.steps-box{margin-top:10px;background:var(--paper);border-radius:10px;padding:12px;}
+.steps-h{font-weight:700;font-size:14px;color:var(--accent);margin-bottom:6px;}
+.steps-txt{font-size:14px;line-height:1.9;color:#3c3c3c;text-align:justify;}
+.tips-h{font-weight:700;font-size:13px;color:#b0722e;margin-top:10px;margin-bottom:4px;}
+.tips-txt{font-size:13px;line-height:1.8;color:#7a5a24;background:#fdf6e8;border-radius:8px;padding:8px 10px;}
+.speaking{animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.55;}}
+@media (prefers-reduced-motion: reduce){.speaking{animation:none;}}
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <button id="backBtn" onclick="navBack()" style="display:none">‹ 返回</button>
+  <div class="logo">🖌️</div>
+  <h1 id="topTitle">书法进阶练习</h1>
+  <button id="homeBtn" onclick="goHome()" style="display:none">🏠</button>
+</div>
+
+<div class="view active" id="view-home">
+  <div class="hero">
+    <div class="t1">颜真卿《颜勤礼碑》</div>
+    <div class="t2">颜真卿晚年楷书代表作 · 三帖逐字精讲<br>拍照上传 · 比对讲评 · 三阶段系统训练</div>
+    <div class="deco">書</div>
+  </div>
+  <div class="info-line">
+    <div class="chip">📅 <span id="todayStr"></span></div>
+    <div class="chip">📸 累计练习 <span id="totalPractice">0</span> 次</div>
+  </div>
+  <div id="stageList"></div>
+  <div class="sec-title">鉴赏与教学视频</div>
+  <div class="list">
+    <div class="list-item" onclick="goSources()">
+      <div class="n" style="background:#ece4cd">🎬</div>
+      <div class="txt"><b>教学视频库</b><small>颜真卿 · 王羲之 精选教学与鉴赏</small></div>
+      <div class="arrow">›</div>
+    </div>
+  </div>
+  <div class="footer-credit">© 王映华</div>
+</div>
+
+<div class="view" id="view-sources">
+  <div class="sec-title">教学与鉴赏视频库</div>
+  <div class="hint">💡 精选全网视频，点「播放」可全屏放大、横竖切换。视频来自哔哩哔哩/好看视频等平台，需联网播放。建议先在本机试播，满意后把链接存到手机书签随时观看。</div>
+  <div id="sourceList"></div>
+</div>
+
+<div class="view" id="view-stage"><div id="stageDetail"></div></div>
+
+<div class="view" id="view-unit"><div id="unitBody"></div><div style="height:70px"></div></div>
+
+<!-- 全屏视频浮层 -->
+<div class="overlay" id="overlay">
+  <div class="obar">
+    <button onclick="closeOverlay()">✕ 关闭</button>
+    <span id="ovTitle">视频</span>
+    <button onclick="rotateOv()">🔄 旋转</button>
+  </div>
+  <div class="ovbody" id="ovBody"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================= 数据 ================= */
+var APP={name:'书法进阶练习 · 颜勤礼碑'};
+
+
+var SOURCES=[
+ {group:'颜真卿《颜勤礼碑》教学', cat:'教学', icon:'📜',
+  items:[
+   {title:'颜勤礼碑基本笔法 · 陈忠建',desc:'颜体基本笔法逐笔讲解，蚕头燕尾、藏头护尾，初学必备。',url:'https://player.bilibili.com/player.html?bvid=BV1zb411e7zG&autoplay=0&danmaku=0'},
+   {title:'《颜勤礼碑》系统教学课程',desc:'按笔画/结构/单字系统精讲，进度跟随。',url:'https://player.bilibili.com/player.html?bvid=BV1Wt75zGE2a&autoplay=0&danmaku=0'},
+   {title:'【颜勤礼碑】最快讲清（8节全）',desc:'快速把握颜勤礼碑整体风格与要点。',url:'https://player.bilibili.com/player.html?bvid=BV1TDpx6yEjN&autoplay=0&danmaku=0'},
+    {title:'《颜勤礼碑》基本笔画 · 御李书法工作室（每笔一集）',desc:'横竖撇捺点每种笔画单独一集精讲，起收笔细节慢放，初学推荐。',url:'https://player.bilibili.com/player.html?bvid=BV1E34y1Q7bA&autoplay=0&danmaku=0'},
+   {title:'颜真卿《颜勤礼碑》书法教学（一）',desc:'单字示范，笔法结构细致讲解。',url:'https://player.bilibili.com/player.html?bvid=BV1gb411H75N&autoplay=0&danmaku=0'},
+   {title:'颜真卿〈颜勤礼碑〉1-200行',desc:'陈忠建全程通临，逾10小时完整示范。',url:'https://player.bilibili.com/player.html?bvid=BV1mp1xBaEH7&autoplay=0&danmaku=0'},
+   {title:'《颜勤礼碑》全文朗读翻译',desc:'碑文全文朗读，理解内容，学习上佳范本。',url:'https://player.bilibili.com/player.html?bvid=BV1uw41167G1&autoplay=0&danmaku=0'}
+  ]},
+  {cat:'教学', icon:'✒️', group:'王羲之《圣教序》教学',
+  items:[
+   {title:'《圣教序》逐字精讲（完整版）',desc:'逐字拆解用笔、结字、连带，进阶首选。',url:'https://player.bilibili.com/player.html?bvid=BV1g5KQ6jEqt&autoplay=0&danmaku=0'},
+   {title:'行书《圣教序》零基础教学',desc:'从点画开始，适合由楷入行过渡。',url:'https://player.bilibili.com/player.html?bvid=BV1t3Kf6aE9X&autoplay=0&danmaku=0'},
+   {title:'王羲之圣教序行书基础教程',desc:'五种书体与圣教序笔法基础。',url:'https://player.bilibili.com/player.html?bvid=BV1B4411n73u&autoplay=0&danmaku=0'},
+   {title:'《圣教序》一字一讲 · 完整版',desc:'逐字精讲，含结构分析与连笔。',url:'https://player.bilibili.com/player.html?bvid=BV1UeM76HEFd&autoplay=0&danmaku=0'}
+  ]},
+ {cat:'鉴赏', icon:'🏛️', group:'颜真卿 · 王羲之 鉴赏',
+  items:[
+   {title:'「翰墨中华」纪录片 · 王羲之《兰亭序》',desc:'央视级书法纪录片，走进书圣与天下第一行书。',url:'https://player.bilibili.com/player.html?bvid=BV1d4QuBjEDu&autoplay=0&danmaku=0'},
+   {title:'天下第一行书：兰亭集序 赏析',desc:'章法、单字、牵丝连带全面赏析。',url:'https://player.bilibili.com/player.html?bvid=BV1EbYN6eEYy&autoplay=0&danmaku=0'},
+   {title:'北京大学书法公开课《书法审美与实践》',desc:'北大公开课，从审美与实践角度讲兰亭。',url:'https://player.bilibili.com/player.html?bvid=av545195255&autoplay=0&danmaku=0'}
+  ]}
+];
+
+var STAGES=[
+  {id:'ele', name:'初级 · 控笔', icon:'🌱', color:'#5a8a5a', title:'初级 · 控笔 + 单字精讲', cat:'ele',
+    desc:'七大类二十三种基本笔画 + 十个单字课一百个经典字，逐个细讲，普通话朗读。完成一个解锁下一个，每练一字都有鼓励。',
+   groups:[
+    {gname:'点画系列（4种）', id:'gk1',
+     items:[
+      {name:'右点 · 侧点', key:'kh_youdian', points:['侧锋切入','笔肚下压','回锋收笔','形态饱满如瓜子'],
+       steps:'先向右下方斜着切入下笔，笔肚轻轻下压，让点画变得饱满，然后笔尖回锋收住，藏起锋芒。整个点像一个饱满的瓜子，下笔要果断，行笔要短促有力。',
+       tips:'常见错误：起笔太轻变成一条细线，或拖得太长变成短撇。点的精华在于下笔即重，收笔即回。'},
+      {name:'左点 · 左点', key:'kh_zuodian', points:['向左下方落笔','笔肚下压','回锋收笔','与右点呼应'],
+       steps:'笔尖向左下方轻轻落下，随即笔肚下压加重，然后回锋收起。左点常与右点成对出现，比如「小」「示」两侧的点，彼此呼应。',
+       tips:'常见错误：把左点写成撇。左点是下压后回锋，撇是渐渐提起出尖，方向和收笔完全不同。'},
+      {name:'挑点 · 向右上挑起', key:'kh_tiaodian', points:['起笔如右点','向右上方挑出','出尖迅速','多与右侧笔画呼应'],
+       steps:'先像写右点一样向右下方切入，稍作停顿蓄力，然后转折笔锋，向右上方迅速挑出，末端出尖。挑点常用在心字底、雨字头里。',
+       tips:'常见错误：挑出时犹豫，导致线条绵软。挑点的动作要一步到位，干脆利落。'},
+      {name:'竖点 · 垂点', key:'kh_shudian', points:['纵向落笔','稍作停顿','回锋收笔','形如短竖'],
+       steps:'笔尖纵向落下，像写一个极短的竖画，稍作停顿让墨色沉实，然后回锋收起。竖点多出现在宝盖头的左侧起笔。',
+       tips:'常见错误：写得过长变成了竖。竖点贵在短小精悍，为后续笔画留出位置。'}
+     ]},
+    {gname:'横画系列（3种）', id:'gk2',
+     items:[
+      {name:'短横 · 轻快利落', key:'kh_duanheng', points:['切笔入纸','调中锋右行','末端回锋','左轻右重'],
+       steps:'笔尖顺势切入纸面，随即调整笔锋为中锋，向右平稳行笔，末端轻按后回锋收住。短横要写得轻快，不可拖泥带水。',
+       tips:'常见错误：写得中间鼓两头尖，像扁担。短横贵在平实，粗细变化不明显。'},
+      {name:'长横 · 微向右上斜', key:'kh_changheng', points:['逆锋起笔','中锋缓行','末端顿笔回锋','左低右高'],
+       steps:'先逆锋起笔藏住锋芒，然后转为中锋向右缓缓行笔，行笔中保持平稳，接近末端时向右下方顿笔，再回锋收住。长横整体呈左低右高的姿态，扛肩约五度左右。',
+       tips:'常见错误：长横写得水平或右端下垂。楷书的横要微微右上倾斜，字才有精神，收笔的顿笔要沉稳有力。'},
+      {name:'斜横 · 方向更斜', key:'kh_xieheng', points:['切笔入纸','向右上方行笔','角度更斜','收缩干脆'],
+       steps:'起笔切纸后，向右上方更明显地倾斜行笔，角度比普通横画更大，常见于「七」「我」等字中。收笔时顿笔回锋，干净利落。',
+       tips:'常见错误：斜度不足退回普通长横，或斜度过大字形失稳。斜横要看所在的字来定角度。'}
+     ]},
+    {gname:'竖画系列（3种）', id:'gk3',
+     items:[
+      {name:'悬针竖 · 垂露出尖', key:'kh_xuanzhen', points:['逆锋起笔','中锋下行','渐提收笔出尖','形如悬挂的针'],
+       steps:'逆锋起笔后转为中锋，垂直向下行笔，行笔中保持笔力均匀，越到末端越提笔，让笔锋渐渐收细，最后一个瞬间出尖收笔，形如一根悬挂的针。',
+       tips:'常见错误：出尖前提前提起，导致尖端虚弱分叉。悬针的尖是行到最末端才提，力量要送到笔端。'},
+      {name:'垂露竖 · 下端圆浑', key:'kh_chuilu', points:['逆锋起笔','中锋下行','末端顿笔','圆润如露珠'],
+       steps:'逆锋起笔，中锋垂直下行，到末端不提笔出尖，而是顿笔回锋，收出圆润饱满的形状，像一滴将落未落的露珠。垂露竖在楷书中使用比悬针竖更多。',
+       tips:'常见错误：末端悬针垂露不分。垂露收笔是顿后回锋，形状圆浑；悬针是渐提出尖，形状尖锐。'},
+      {name:'短竖 · 短促有力', key:'kh_duanshu', points:['切笔入纸','中锋下行','行笔短促','顿笔回收'],
+       steps:'切笔入纸后调中锋，短距离垂直下行，末端顿笔回锋。短竖多在字的上部或内部，为整个字确定重心。',
+       tips:'常见错误：写得细长、软弱。短竖虽短，也要挺拔有力，是字的脊梁。'}
+     ]},
+    {gname:'撇画系列（4种）', id:'gk4',
+     items:[
+      {name:'短撇 · 平而快', key:'kh_duanpie', points:['切笔起笔','向左下方撤出','行笔短促','出尖干脆'],
+       steps:'笔尖切纸后，向左下方快速撤出，行笔短促，末端出尖干脆。短撇常用于「千」的起笔、「禾」的上撇，姿态平而有力。',
+       tips:'常见错误：写得太长或方向过于竖直。短撇要短而平，像鸟儿啄食，快而有劲。'},
+      {name:'长撇 · 舒展流畅', key:'kh_changpie', points:['逆锋起笔','向左下方行笔','渐行渐提','力送出尖'],
+       steps:'逆锋起笔后调中锋，向左下方舒展行笔，行笔中渐渐提笔让线条由粗变细，力量一直送到末端，最后出尖收笔。长撇讲究舒展流畅，如「左」「在」的撇。',
+       tips:'常见错误：中段就提前出尖，后半段漂浮无力。长撇的力要送到最后，末端虽细但不虚弱。'},
+      {name:'竖撇 · 先竖后撇', key:'kh_shupie', points:['先按竖画下行','过半后向左弯','末端出尖','如月字旁的撇'],
+       steps:'起笔如写竖画，垂直下行到大约三分之二处，渐渐向左下方弯转，末端出尖。竖撇上半是竖、下半是撇，典型如「月」字左侧的撇。',
+       tips:'常见错误：一开始就向左弯，变成普通的斜撇。竖撇的精髓在先竖后弯，转折要自然不可生硬。'},
+      {name:'斜撇 · 弧度适中的斜势撤出', key:'kh_xiepie', points:['切笔起笔','向左下方弧线行笔','弧度适中','出尖含蓄'],
+       steps:'起笔切纸，向左下方带弧度地行笔，弧度适中、不可过弯，末端出尖含蓄。斜撇在「大」「文」等字中起到支撑和均衡重心的作用。',
+       tips:'常见错误：弧度太大写成弯钩，或没有弧度写成直线。斜撇的弧度大约为六分之一个圆弧，要流畅自然。'}
+     ]},
+    {gname:'捺画系列（3种）', id:'gk5',
+     items:[
+      {name:'斜捺 · 经典一波三折', key:'kh_xiena', points:['起笔轻入','行笔渐重','捺脚处重按','提笔出尖'],
+       steps:'起笔轻轻入纸，向右下方行笔，力量渐渐加重，线条由细变粗，到捺脚处重按，让最粗处出现在这里，然后向右水平方向缓缓提笔出尖。捺画讲究一波三折：起笔、行笔、捺脚，三个阶段各有轻重缓急。',
+       tips:'常见错误：捺脚处没有重按，整个捺画粗细均匀像一根棍子。捺的精彩就在捺脚，重按后再出尖，像划船的桨。'},
+      {name:'平捺 · 水平舒展', key:'kh_pingna', points:['轻入笔','沿水平方向行笔','末端上挑出尖','如「之」走之底'],
+       steps:'起笔轻入，接近水平方向向右行笔，行笔渐重，到末端向上挑出尖。平捺托住整个字，如「之」「过」的走之底，要写得平稳舒展，像一只小船托起上面的部件。',
+       tips:'常见错误：写成斜捺或波浪过大。平捺的关键在平而有力，托稳整个字。'},
+      {name:'反捺 · 长点收势', key:'kh_fanna', points:['起笔轻入','向右下行笔渐重','顿笔收住不出尖','形如放大的右点'],
+       steps:'起笔轻入纸面向右下方行笔，力量渐重，末端顿笔回锋收住，不出尖。反捺形如一个放大的右点：在「不」「东」等字中代替斜捺，让字更含蓄内敛。',
+       tips:'常见错误：末端出尖变成了斜捺。反捺不须出尖，顿收即止，讲究含蓄。'}
+     ]},
+    {gname:'提与折（2种）', id:'gk6',
+     items:[
+      {name:'提 · 向右上提出', key:'kh_ti', points:['切笔斜入','顿笔蓄力','向右上方提出','出尖干净'],
+       steps:'笔尖向右下方切纸，顿笔蓄力，然后转向右上方迅速提出，末端出尖干净利落。提也称挑，多用于提手旁、提土旁的最后一笔，与右侧笔画遥相呼应。',
+       tips:'常见错误：顿笔后直接平推，缺少向右上方的角度。提起笔要有爆发力，方向明确。'},
+      {name:'横折 · 转折处方劲', key:'kh_hengzhe', points:['先写横画','转折处顿笔','调锋向下行笔','方角明显'],
+       steps:'先按横画的方法向右行笔，到转折处向右下方顿笔，把笔锋调整为垂直向下，然后垂直下行写竖。转折处要顿出清晰的方角，这是楷书的重要特征。',
+       tips:'常见错误：转折处直接滑过去，写出圆转的弧线，变成行书的味道。楷书转折要"折"，先顿后行，方劲有力。'}
+     ]},
+    {gname:'钩画系列（4种）', id:'gk7',
+     items:[
+      {name:'竖钩 · 收笔向左上勾出', key:'kh_shugou', points:['按竖画下行','末端顿笔','向左上方勾出','勾短而锐'],
+       steps:'按悬针竖的方法中锋下行，到末端先向左下方顿笔蓄力，然后笔锋快速向左上方勾出，勾要短小锐利，如「木」「寸」的竖钩。颜体的钩常在勾之前先回锋调整，再向左上勾出。',
+       tips:'常见错误：勾出过长过大，喧宾夺主。钩是笔画的余势，短促有力即可，长度约为笔画的十分之一。'},
+      {name:'横钩 · 横末向左下勾', key:'kh_henggou', points:['先写横','末端顿笔','向左下方勾出','如宝盖头'],
+       steps:'先向右写横画，到末端向右下顿笔，然后笔锋翻转，向左下方勾出，勾尖指向字的内部。横钩多出现在宝盖头「宀」、秃宝盖「冖」的末笔。',
+       tips:'常见错误：勾的方向不对，写成向下或水平。横钩的勾要指向左下方，护住字的内部。'},
+      {name:'斜钩 · 纵长弧线钩', key:'kh_xiegou', points:['起笔后向右下弧线行笔','弧中含力','末端顿笔','向上勾出'],
+       steps:'起笔后向右下方作弧线行笔，行笔中保持笔力不泄，弧度舒展，到末端顿笔蓄力，然后向上方勾出。斜钩又称戈钩，是「我」「成」等字的主笔，要写得纵长挺拔，撑起整个字的骨架。',
+       tips:'常见错误：弧度太直或太弯、钩出无力。斜钩是字中最舒展的笔画，行笔要如拉满的弓，蓄满力再放。'},
+      {name:'卧钩 · 心字底专用', key:'kh_wogou', points:['轻入笔','向右下再向右作卧弧','末端向左上方勾出','如心字底'],
+       steps:'轻轻起笔后，先向右下方再转向右方，作一个平卧的弧线，行笔渐重，到末端顿笔，向左上方勾出。卧钩专用于「心」「必」等字的心字底，形如一颗心的轮廓。',
+       tips:'常见错误：弧线不够平卧，或勾的方向偏向右上方。卧钩要卧得平、勾得正，托住上面的点。'}
+      ]},
+     {title:"单字精讲 · 第1课", id:'dz1', items:[
+ {name:"上", unit:'zi1_shang', desc:"上宽下窄，竖画居中", points:["短横轻起","中竖垂直","长横托底","重心居中"],
+  steps:"上字由短横、中竖、长横三笔组成。先写短横，轻起轻收，位置靠上；中竖起笔略重，垂直下行，立在短横正中；最后长横平铺收笔，左右对称。三笔间距均匀，上窄下宽，稳稳立住。",
+  tips:"中竖必须对准正中线，稍有偏斜全字即歪；长横要平稳微扛肩，托住全字。"},
+ {name:"下", unit:'zi1_xia', desc:"长横起，竖居中，点是点睛", points:["长横舒展","中竖对正","右点呼应","三笔等距"],
+  steps:"先写长横，为主笔，舒展平稳；中竖紧接横画正中，短促有力；最后一点写在竖的右侧，略低于竖的起笔。三笔间距基本相等，形成节奏。",
+  tips:"点写得太小或位置太偏右都会失衡；下字的点要饱满，与竖呼应。"},
+ {name:"人", unit:'zi1_ren', desc:"撇捺开张，交汇即分", points:["斜撇舒展","捺起于撇上","撇捺对称","交点在上"],
+  steps:"斜撇起笔稍重，向左下方舒展撇出；捺在撇的上端露锋起笔，向右下行笔渐重，捺脚重按后出锋。撇捺交点在字的上部约三分之一处，交点以下各自开张。",
+  tips:"撇捺开张不够显得局促；捺画太低则重心下沉。撇捺夹角约九十度，左右对称。"},
+ {name:"大", unit:'zi1_da', desc:"横短撇长，捺为主笔", points:["横短扛肩","撇从横中起","捺从交点起","撇捺开张"],
+  steps:"大字先写短横，微微扛肩；长撇从横画中部偏左起笔，向左下舒展；捺起笔于横撇交点附近，向右下渐行收重，捺角重按出锋。大字精神全在撇捺，要开张有力。",
+  tips:"横画太长喧宾夺主；撇捺不开张字就小气。"},
+ {name:"之", unit:'zi1_zhi', desc:"上点如冠，平捺如舟", points:["上点居中","撇短带弧","平捺舒展","整体扁阔"],
+  steps:"之字上点居中，如给字戴帽；中间的撇短而带弧度，方向指向左下；平捺从撇末端起笔，近水平向右舒展，末端向上出尖。整体扁阔，平捺像小船托住上部。",
+  tips:"平捺写成斜捺是常见错误；要平而稳，才能托住全字。"},
+ {name:"也", unit:'zi1_ye', desc:"横短折长，竖弯钩主笔", points:["横画短","折向左下","竖弯钩圆转","钩指右上"],
+  steps:"也字先写横折，横画短，折后向左下行；中间短竖紧收；最后竖弯钩是主笔：先向下行笔，再圆转向右，末端向右上方勾出。字的姿态全靠竖弯钩撑起。",
+  tips:"竖弯钩的弯写成直角会生硬；勾要指向上方，有力。"},
+ {name:"天", unit:'zi1_tian', desc:"两横扛肩，撇捺开张", points:["两横扛肩","撇从横中","捺从交点","撇捺开张"],
+  steps:"天字首横短，第二横稍长，均微扛肩；撇从横画中央偏左起笔，向左下舒展；捺从交点处起笔，向右下渐行渐重。全字上紧下松，左右开张。",
+  tips:"两横间距太近或太远都会失衡；撇捺要开张。"},
+ {name:"心", unit:'zi1_xin', desc:"三点一钩，各归其位", points:["左点低垂","卧钩平卧","中点最高","右点呼应"],
+  steps:"心字要点是三点一钩：左点低垂，卧钩平卧，中点在钩上方，右点在钩的右上方。卧钩为主笔，弯弧平缓，钩要蓄力回挑。",
+  tips:"卧钩写太弯会成月牙；三点高低不分。"},
+ {name:"中", unit:'zi1_zhong', desc:"中宫收紧，竖画挺拔", points:["口部扁阔","中竖垂直","两侧内收","重心稳定"],
+  steps:"中字口部扁阔，左竖与折竖均向内收拢；中竖从口的中央起笔，垂直贯穿全字，挺拔有力，是全字主心骨。口左上角常留缝透气。",
+  tips:"口部过大或中竖不垂直，字即歪。"},
+ {name:"寸", unit:'zi1_cun', desc:"横长钩正，点平重心", points:["长横舒展","竖钩居中","钩短而锐","点平衡"],
+  steps:"寸字长横舒展，是全字宽度担当；竖钩从横画中央偏左垂直下行，末端向左勾出，钩短有力；点写在竖钩右侧，平衡重心。",
+  tips:"竖钩的钩写太长喧宾夺主；点位置偏移重心不稳。"},
+]},
+
+{title:"单字精讲 · 第2课", id:'dz2', items:[
+ {name:"土", unit:'zi2_tu', desc:"横短竖长，下横托底", points:["上横短","竖居正中","下横长","收笔厚重"],
+  steps:"土字上横短，竖画居中贯穿，下横长而稳，收笔厚实。横竖比例适中，全字稳健，是楷书的基本架构。",
+  tips:"竖不居中字不正；上横过长则失衡。"},
+ {name:"王", unit:'zi2_wang', desc:"三横一竖，平分秋色", points:["三横等距","中横略短","竖画居中","收笔厚重"],
+  steps:"王字三横一竖：三横间距均匀，中横略短；竖画从首横起笔穿过，垂直居中。端庄平稳，是楷书横竖基本功的代表。",
+  tips:"三横间距不均；竖画不居中。"},
+ {name:"三", unit:'zi2_san', desc:"三横等距，长短有别", points:["首横短","中横最短","底横最长","间距均匀"],
+  steps:"三字三横，间距均匀，首横短、中横更短、底横最长最稳。楷书横画左低右高，微扛肩。",
+  tips:"三横长短不分；间距不均匀。"},
+ {name:"月", unit:'zi2_yue', desc:"竖撇挺直，横折钩正", points:["竖撇挺直","横折钩","两横居中","字形修长"],
+  steps:"月字先写竖撇，上部竖直；再写横折钩，横短竖长勾向上；内部两短横居中紧凑。字形修长，是楷书常见形体。",
+  tips:"竖撇过早弯曲；内横偏低。"},
+ {name:"日", unit:'zi2_ri', desc:"外方内收，一横居中", points:["左竖短","横折","中横居中","下横封口"],
+  steps:"日字外框先写左竖，再写横折，横短竖长；中间一短横居中；最后一横托底封口。外方内收，中宫紧凑。",
+  tips:"中横位置偏移；外框过宽不方正。"},
+ {name:"水", unit:'zi2_shui', desc:"竖钩居中，撇捺对称", points:["竖钩居中","左撇","右捺","撇捺对称"],
+  steps:"水字竖钩居中，钩向右上；左撇从竖钩上部起笔，右下捺从竖钩中部起笔，向右下收。撇捺对称，字形灵动。",
+  tips:"撇捺不对称字会歪；捺画过低。"},
+ {name:"木", unit:'zi2_mu', desc:"横短竖长，撇捺垂张", points:["横扛肩","竖钩居中","撇捺开张","钩短有力"],
+  steps:"木字横画微扛肩，竖钩居中垂直，钩短有力；撇捺从横竖交点下方左右舒展，末笔收敛。",
+  tips:"撇捺开张不足；竖钩不居中。"},
+ {name:"口", unit:'zi2_kou', desc:"上宽下窄，方正紧凑", points:["左竖","横折","两横","整体方正"],
+  steps:"口字左竖略斜，横折横平竖正，底部横封口。字形上宽下窄，保持方正，是包围结构的基石。",
+  tips:"口部写得过大过方。"},
+ {name:"田", unit:'zi2_tian', desc:"外框方正，中竖居中", points:["外框","中竖","两横","等距"],
+  steps:"田字外框方正，内竖居中将框一分为二，上下横平分。中宫紧凑，四边均衡。",
+  tips:"中竖偏移；外框变形。"},
+ {name:"力", unit:'zi2_li', desc:"横折钩纵长，撇短收", points:["横折钩","撇","钩有力","取斜势"],
+  steps:"力字横折钩横短折长，钩向左上；撇从上部穿入，与折钩交叉。字形取斜势，重心稳。",
+  tips:"撇写太直失去力量感。"},
+]},
+
+{title:"单字精讲 · 第3课", id:'dz3', items:[
+ {name:"安", unit:'zi3_an', desc:"宝盖覆盖，女部站稳", points:["宝盖头","女部","撇捺站稳","上下呼应"],
+  steps:"安字宝盖头覆盖，女部在下。宝盖要宽能盖住全字，女部撇捺站稳，上下呼应。",
+  tips:"宝盖太窄盖不住；女部撇捺过散。"},
+ {name:"宝", unit:'zi3_bao', desc:"宝盖舒展，中宫紧凑", points:["宝盖舒展","内部紧凑","横折钩稳","玉部居中"],
+  steps:"宝字宝盖头宽展如伞，玉部居于其中，横折钩沉着有力。宝盖横画平稳，内字紧凑。",
+  tips:"宝盖太窄；玉部偏离中心。"},
+ {name:"家", unit:'zi3_jia', desc:"宝盖宽展，豕部收拢", points:["宝盖头","豕部","三点","呼应"],
+  steps:"家字宝盖头宽展，下部豕部三点收拢，宝盖与豕部呼应。多横竖弯钩，笔画丰富。",
+  tips:"豕部写散；宝盖不够宽。"},
+ {name:"云", unit:'zi3_yun', desc:"雨字头，云字收", points:["雨头","四点","云部","横折钩"],
+  steps:"云字雨字头宽展，下部云字收。雨字头四点平均分布，横折钩端正。",
+  tips:"雨头过宽；四点不均。"},
+ {name:"春", unit:'zi3_chun', desc:"三横扛肩，日部托底", points:["三横","撇捺","日部","上紧下松"],
+  steps:"春字三横微扛肩，撇捺在横下交叉开张，日部在下托底。上紧下松，是季节字的经典。",
+  tips:"撇捺开张不足；日部偏大。"},
+ {name:"岁", unit:'zi3_sui', desc:"山字头，夕部收紧", points:["山字头","夕部","外斜","重心稳"],
+  steps:"岁字山字头，夕部在下，山部窄，夕部撇画舒展。上小下大，重心稳。",
+  tips:"山部过窄；夕部笔画散。"},
+ {name:"金", unit:'zi3_jin', desc:"人字头，下部收拢", points:["人字头","贝部","对称","下收"],
+  steps:"金字上部人字头开张，下部贝部收拢。上下相合，重心居中。",
+  tips:"人字头太窄；下部过宽。"},
+ {name:"学", unit:'zi3_xue', desc:"学字头，子部沉稳", points:["学字头","宝盖","子部","上紧下松"],
+  steps:"学字上部聚拢，宝盖覆盖，子部在下沉稳。上紧下松，中宫紧凑。",
+  tips:"上部写散；子部偏大。"},
+ {name:"宫", unit:'zi3_gong', desc:"宝盖宽展，吕部居中", points:["宝盖头","两口","居中","端正"],
+  steps:"宫字宝盖头宽展，下部两「口」上下相叠，居中端正。上宽下窄，中宫紧凑。",
+  tips:"两口偏移；宝盖太窄。"},
+ {name:"富", unit:'zi3_fu', desc:"宝盖宽展，畐部厚重", points:["宝盖头","畐部","横画","厚重"],
+  steps:"富字宝盖头宽展，畐部厚重。横画平正，底部稳当。",
+  tips:"畐部过宽；宝盖太窄。"},
+]},
+
+{title:"单字精讲 · 第4课", id:'dz4', items:[
+ {name:"塔", unit:'zi4_ta', desc:"左让右，右部舒展", points:["土旁左让","右部舒展","横折钩重","穿插呼应"],
+  steps:"塔字左土旁窄长，右部舒展，下部横折钩为最重一笔。左右穿插避让，浑然一体。",
+  tips:"土旁过宽与右争地；右部过重失衡。"},
+ {name:"佛", unit:'zi4_fo', desc:"单人旁窄，右部雍容", points:["单人旁窄","右部舒展","竖弯钩","重心平稳"],
+  steps:"佛字单人旁窄，右部弯曲转。单人旁与右部呼应，竖弯钩有力。",
+  tips:"单人旁过宽；右部写散。"},
+ {name:"明", unit:'zi4_ming', desc:"日旁月旁，左右相让", points:["日部窄","月部宽","左右呼应","重心居中"],
+  steps:"明字日旁月旁，日小月大。日部收窄，月部舒展，左右呼应。",
+  tips:"日月大小不分；间距过大。"},
+ {name:"经", unit:'zi4_jing', desc:"绞丝旁，右部端正", points:["绞丝旁收窄","右部端正","左右呼应","绞丝清晰"],
+  steps:"经字绞丝旁收窄，右部端正。绞丝旁三折，右部横平。",
+  tips:"绞丝旁散；右部过宽。"},
+ {name:"教", unit:'zi4_jiao', desc:"左紧右松，穿插避让", points:["左部收窄","右部舒展","穿插避让","右部撇捺"],
+  steps:"教字左右结构，左部收窄，右部舒展，左右穿插避让。",
+  tips:"左部过宽；右部写散。"},
+ {name:"如", unit:'zi4_ru', desc:"女旁斜，口方正", points:["女字旁","口部","呼应","口方正"],
+  steps:"如字女字旁斜，口部方正，左右呼应。女旁撇短，口部端正。",
+  tips:"女旁撇太短；口部歪。"},
+ {name:"传", unit:'zi4_chuan', desc:"单人旁窄，专部舒展", points:["单人旁窄","专部","竖折","左右呼应"],
+  steps:"传字单人旁，右部专。单人旁窄，专部横画舒展。",
+  tips:"专部过宽；左右失衡。"},
+ {name:"何", unit:'zi4_he', desc:"单人旁窄，可部舒展", points:["单人旁窄","可部","横竖钩","左右"],
+  steps:"何字单人旁，右部可。单人旁窄，可部横长竖钩。",
+  tips:"可部横过短。"},
+ {name:"作", unit:'zi4_zuo', desc:"单人旁，作部端正", points:["单人旁","作部","左窄右宽","重心"],
+  steps:"作字单人旁，右部作。左右结构，左窄右宽。",
+  tips:"右部过宽；左右失衡。"},
+ {name:"行", unit:'zi4_xing', desc:"双人旁，右部于", points:["双人旁","右部","横竖","左右"],
+  steps:"行字双人旁，右部于。双人旁高，右部横竖。",
+  tips:"双人旁过宽；左右失衡。"},
+]},
+
+{title:"单字精讲 · 第5课", id:'dz5', items:[
+ {name:"国", unit:'zi5_guo', desc:"四面包围，玉在其中", points:["口框方正","玉部居中","四面包围","间距均匀"],
+  steps:"国字外口方正，玉部居中，四面包围。玉部三横等距，点居中。",
+  tips:"口框不正；玉部偏离中心。"},
+ {name:"风", unit:'zi5_feng', desc:"几字框，斜钩纵长", points:["几字框","斜钩","虫部","内收"],
+  steps:"风字外框几形，右边斜钩纵长，内部虫部紧凑。斜钩纵长，虫部收。",
+  tips:"斜钩写太弯；虫部写散。"},
+ {name:"门", unit:'zi5_men', desc:"门字框，两竖钩", points:["门字框","两竖钩","外拓","对称"],
+  steps:"门字两竖钩外拓，横折钩。门框端正，钩短有力。",
+  tips:"两钩不对称。"},
+ {name:"问", unit:'zi5_wen', desc:"门字框，口部内", points:["门字框","口部","内收","钩"],
+  steps:"问字门字框，口部在内。门框端正，口部居中。",
+  tips:"门框不正；口部偏移。"},
+ {name:"园", unit:'zi5_yuan', desc:"口框，内元", points:["口框","元部","方正","间距"],
+  steps:"园字四方框，元部在内。口框方正，元部居中。",
+  tips:"元部偏移。"},
+ {name:"运", unit:'zi5_yun', desc:"走之旁，云部", points:["走之旁","云部","平捺","间距"],
+  steps:"运字走之旁，右云部。走之旁平捺托底，云部收。",
+  tips:"走之捺过弯。"},
+ {name:"近", unit:'zi5_jin', desc:"走之旁，斤部", points:["走之旁","斤部","平捺","托底"],
+  steps:"近字走之旁，斤部。走之捺托，斤部撇竖。",
+  tips:"走之捺太短。"},
+ {name:"道", unit:'zi5_dao', desc:"走之旁，首部", points:["走之旁","首部","平捺","舒展"],
+  steps:"道字走之旁，首部。走之捺舒展，首部横平。",
+  tips:"首部过大。"},
+ {name:"间", unit:'zi5_jian', desc:"门字框，日部内", points:["门字框","日部","内收","钩"],
+  steps:"间字门框，日部在内。门框端正，日部居中。",
+  tips:"门框不正；日部偏移。"},
+ {name:"同", unit:'zi5_tong', desc:"围框正，内口收", points:["围框","内口","方正","内收"],
+  steps:"同字外框，内口。框要平正，内口收。",
+  tips:"内部写散；框过宽。"},
+]},
+
+{title:"单字精讲 · 第6课", id:'dz6', items:[
+ {name:"寺", unit:'zi6_si', desc:"颜体代表字，稳中求变", points:["三横有序","竖画贯穿","上密下疏","重心稳"],
+  steps:"寺字为颜体标志字：三横长短不一、间距均匀，中竖贯穿上部挺拔，下部紧凑。上密下疏，稳中求变。",
+  tips:"三横一样长就呆板。"},
+ {name:"宝", unit:'zi6_bao2', desc:"宝字宝盖头覆盖", points:["宝盖头","玉部","横折钩","端正"],
+  steps:"宝字宝盖头覆盖，玉部居中，横折钩沉着。宝盖平稳，上下呼应。",
+  tips:"宝盖太窄；玉部偏移。"},
+ {name:"千", unit:'zi6_qian', desc:"平撇短撇，长撇舒展", points:["平撇","短横","竖","长撇"],
+  steps:"千字平撇短，短横扛肩，竖画垂直，长撇从横竖交点向左下舒展渐收。上紧下松。",
+  tips:"平撇写斜；长撇太短。"},
+ {name:"百", unit:'zi6_bai', desc:"长横在上，白字正", points:["长横","白部","正","间距"],
+  steps:"百字长横在上，白字方正。横长白正，整体端正。",
+  tips:"白部写宽；长横太短。"},
+ {name:"年", unit:'zi6_nian', desc:"年字悬针竖，竖贯其中", points:["横","竖","悬针","撇捺"],
+  steps:"年字横画紧，竖垂悬针，如利剑，撇捺收。",
+  tips:"竖不垂直。"},
+ {name:"永", unit:'zi6_yong', desc:"永字八法，万练之基", points:["八法","横","竖钩","撇捺"],
+  steps:"永字八法为练字之基：点、横、竖钩、撇捺兼备，一气呵成。",
+  tips:"八法不全；笔画散。"},
+ {name:"有", unit:'zi6_you', desc:"横长撇展，月部收", points:["横","撇","月","均衡"],
+  steps:"有字横长，撇长，月部收。横与撇交叉处从容。",
+  tips:"撇写太短。"},
+ {name:"不", unit:'zi6_bu', desc:"横撇竖点，不字四笔", points:["横","撇","竖","点"],
+  steps:"不字横画，撇竖，捺点收。左竖右点。",
+  tips:"点捺不分。"},
+ {name:"之", unit:'zi6_zhi2', desc:"之字三点，平捺如舟", points:["点","撇","平捺","舒展"],
+  steps:"之字点、撇、平捺三笔。平捺舒展如舟。",
+  tips:"平捺写斜。"},
+ {name:"多", unit:'zi6_duo', desc:"多字斜撇，上紧下松", points:["多","斜撇","上紧下松","匀称"],
+  steps:"多字四撇，斜度一致，上紧下松。",
+  tips:"撇太直。"},
+]},
+
+{title:"单字精讲 · 第7课", id:'dz7', items:[
+ {name:"福", unit:'zi7_fu', desc:"示字旁，福部端正", points:["示字旁","右部","横竖","间距"],
+  steps:"福字示字旁，右部一、口、田。示旁竖垂，右部紧凑。",
+  tips:"右部写散；示旁太宽。"},
+ {name:"德", unit:'zi7_de', desc:"德字双人旁，目心端正", points:["双人旁","十","目","心"],
+  steps:"德字双人旁，右部十、目、心。多横等距，心部卧钩。",
+  tips:"右部多横不均。"},
+ {name:"寿", unit:'zi7_shou', desc:"寿字多横，竖钩", points:["寿","横竖","钩","匀称"],
+  steps:"寿字多横，竖钩。多横等距。",
+  tips:"多横不均。"},
+ {name:"善", unit:'zi7_shan', desc:"善字羊头，口部正", points:["羊头","口","正","匀称"],
+  steps:"善字羊字头，口字底。多横，羊头开张。",
+  tips:"口部写大。"},
+ {name:"孝", unit:'zi7_xiao', desc:"孝字，子部弯钩", points:["孝","横","子部","弯钩"],
+  steps:"孝字上老下子，横长撇，子部弯钩。",
+  tips:"子部钩无力。"},
+ {name:"智", unit:'zi7_zhi', desc:"知日在左，日方正", points:["知部","日部","左右","方正"],
+  steps:"智字知部在左，日部在右。知部，日部方正。",
+  tips:"知部过宽。"},
+ {name:"信", unit:'zi7_xin', desc:"单人旁，言部横平", points:["单人旁","言部","横","匀称"],
+  steps:"信字单人旁，言部多横。言部横平。",
+  tips:"言部横不均。"},
+ {name:"礼", unit:'zi7_li', desc:"礼字示旁，乙字钩", points:["示字旁","乙部","弯钩","端正"],
+  steps:"礼字示字旁，乙部弯钩。示旁窄。",
+  tips:"弯钩太弯。"},
+ {name:"义", unit:'zi7_yi', desc:"义字两点，撇捺开张", points:["义字","两点","撇捺","开张"],
+  steps:"义字上部两点，下部撇捺。撇捺开张。",
+  tips:"撇捺太短。"},
+ {name:"廉", unit:'zi7_lian', desc:"广字头，兼字端正", points:["广字头","兼部","正","横平"],
+  steps:"廉字广字头，兼部。兼部多横，横平。",
+  tips:"兼部横不均。"},
+]},
+
+{title:"单字精讲 · 第8课", id:'dz8', items:[
+ {name:"法", unit:'zi8_fa', desc:"法字三点水，去部", points:["三点水","去部","左窄右宽","匀称"],
+  steps:"法字三点水，去部。三点水聚，去部正。",
+  tips:"三点水散。"},
+ {name:"施", unit:'zi8_shi', desc:"方人旁，施部收", points:["方人旁","施部","横竖","左窄右宽"],
+  steps:"施字方人旁，施部。方人旁窄，施部收。",
+  tips:"方人旁过宽。"},
+ {name:"华", unit:'zi8_hua', desc:"草字头，下部收", points:["草字头","华部","横","下收"],
+  steps:"华字草字头，下部竖折。草头宽，下部收。",
+  tips:"草头太窄。"},
+ {name:"高", unit:'zi8_gao', desc:"高字横竖，口部居中", points:["高字","横竖","口","居中"],
+  steps:"高字上横，中部口，下部内收。",
+  tips:"口部过小。"},
+ {name:"峰", unit:'zi8_feng', desc:"山字旁，峰部宽", points:["山字旁","峰部","左右","匀称"],
+  steps:"峰字山字旁，峰部。山旁左，峰部宽。",
+  tips:"峰部过宽。"},
+ {name:"远", unit:'zi8_yuan', desc:"走之旁，元部", points:["走之旁","元部","平捺","舒展"],
+  steps:"远字走之旁，元部。走之捺舒展。",
+  tips:"走之捺太短。"},
+ {name:"能", unit:'zi8_neng', desc:"能字月比，左右相让", points:["能","月部","比部","匀称"],
+  steps:"能字月部，比部。能字左右相让。",
+  tips:"比部偏移。"},
+ {name:"一", unit:'zi8_yi', desc:"一横千钧，稳如泰山", points:["横","起笔","收笔","平稳"],
+  steps:"一横，起笔顿、收笔回。横平。",
+  tips:"横不平稳。"},
+ {name:"世", unit:'zi8_shi2', desc:"世字横长，竖画端正", points:["世","竖","横","横长"],
+  steps:"世字三竖，横长。横长稳。",
+  tips:"横过短。"},
+ {name:"长", unit:'zi8_chang', desc:"长字横捺，捺收有力", points:["长","横","捺","收笔"],
+  steps:"长字横长，捺收。",
+  tips:"捺写短。"},
+]},
+
+{title:"单字精讲 · 第9课", id:'dz9', items:[
+ {name:"横", unit:'zi9_heng', desc:"横画要平，起收有法", points:["横画","起笔","收笔","平稳"],
+  steps:"横画：逆锋起笔，中锋行笔，回锋收笔，横要平。",
+  tips:"横画不平。"},
+ {name:"竖", unit:'zi9_shu', desc:"竖画要直，悬针垂露", points:["竖","挺直","悬针","垂露"],
+  steps:"竖画：中锋直下，起笔逆锋，收笔悬针或垂露。",
+  tips:"竖画不直。"},
+ {name:"撇", unit:'zi9_pie', desc:"撇画舒展，末端出锋", points:["撇","起笔","行笔","出锋"],
+  steps:"撇画：逆锋起笔，中锋行笔，末端出锋。撇要舒展。",
+  tips:"撇太直。"},
+ {name:"捺", unit:'zi9_na', desc:"捺画一波三折，重按出锋", points:["捺","起笔","行笔","捺脚"],
+  steps:"捺画：起笔轻，行笔渐重，捺脚重按后出锋。",
+  tips:"捺脚不重。"},
+ {name:"点", unit:'zi9_dian', desc:"点画轻灵，回锋收笔", points:["点","起笔","行笔","收笔"],
+  steps:"点画：起笔轻入，行笔回锋收，点要饱满。",
+  tips:"点画太虚。"},
+ {name:"钩", unit:'zi9_gou', desc:"钩画短促，蓄力出锋", points:["钩","蓄力","出锋","短促"],
+  steps:"钩画：顿笔蓄力，短促出锋。钩要锐。",
+  tips:"钩画太长。"},
+ {name:"提", unit:'zi9_ti', desc:"提画轻快，向右上出锋", points:["提","起笔","行笔","出锋"],
+  steps:"提画：起笔轻，向右上快速提出。",
+  tips:"提画太慢。"},
+ {name:"折", unit:'zi9_zhe', desc:"折画方劲，顿笔折锋", points:["折","顿笔","折锋","方劲"],
+  steps:"折画：转折处顿笔，方劲有力。",
+  tips:"折画圆转。"},
+ {name:"顿", unit:'zi9_dun', desc:"顿笔沉着，蓄势待发", points:["顿","重按","蓄力","沉着"],
+  steps:"顿笔：重按蓄力，是笔画的起动。",
+  tips:"顿笔太轻。"},
+ {name:"劲", unit:'zi9_jing', desc:"劲字有力，笔画刚健", points:["劲","有力","刚健","骨力"],
+  steps:"劲字，笔画有力，线条刚健。",
+  tips:"线条软弱。"},
+]},
+
+{title:"单字精讲 · 第10课", id:'dz10', items:[
+ {name:"初", unit:'zi10_chu', desc:"初学之始，心正笔正", points:["初","学","心","端正"],
+  steps:"初学之始，心要正，笔要正，字要端正。",
+  tips:"心浮气躁。"},
+ {name:"静", unit:'zi10_jing', desc:"静心习字，气定神闲", points:["静","心","气","安定"],
+  steps:"习字要静，心静则字稳。",
+  tips:"心不静。"},
+ {name:"观", unit:'zi10_guan', desc:"观帖读帖，意在笔先", points:["观","读","意","细心"],
+  steps:"先观后写，意在笔先，观帖要细。",
+  tips:"不观即写。"},
+ {name:"得", unit:'zi10_de', desc:"得其神，渐入佳境", points:["得","神","法","渐进"],
+  steps:"习字循序渐进，得其神韵，渐入佳境。",
+  tips:"急于求成。"},
+ {name:"乐", unit:'zi10_le', desc:"乐在其中，持之以恒", points:["乐","恒","坚持","欢喜"],
+  steps:"习字乐在其中，持之以恒，日积月累。",
+  tips:"三天打鱼。"},
+ {name:"恒", unit:'zi10_heng', desc:"恒心持久，静心如水", points:["恒","坚持","持久","恒心"],
+  steps:"持之以恒，静心习字，必有收获。",
+  tips:"半途而废。"},
+ {name:"弘", unit:'zi10_hong', desc:"弘毅，志存高远", points:["弘","远","志","开阔"],
+  steps:"弘毅二字，志存高远，习字如做人。",
+  tips:"胸无大志。"},
+ {name:"毅", unit:'zi10_yi', desc:"毅力如铁，百练成钢", points:["毅","百练","成钢","坚毅"],
+  steps:"毅力百练，铁杵成针，习字亦然。",
+  tips:"缺乏毅力。"},
+ {name:"达", unit:'zi10_da', desc:"通达乐观，心宽字正", points:["达","通","观","达观"],
+  steps:"达人达观，习字通达，心宽字正。",
+  tips:"固执己见。"},
+ {name:"温", unit:'zi10_wen', desc:"温故而知新", points:["温","故","新","常练"],
+  steps:"温故知新，反复习练，常有新得。",
+  tips:"学了就忘。"},
+]},
+     ]},
+{id:'mid', name:'中级 · 选贴', icon:'📚', color:'#7a3b2e', title:'中级 · 选贴教学',
+    desc:'从多部经典楷书字帖中选择一部，每帖三十页逐页精讲。写完一页解锁下一页，每完成一页都有鼓励。', cat:'mid'},
+  {id:'adv', name:'高级 · 圣教序', icon:'🌟', color:'#a8543f', title:'高级 · 王羲之《圣教序》',
+   desc:'行书巅峰之作，按页逐字精讲。每页的字都要拍照并比对讲评。', cat:'adv'}
+];
+
+var MID_POSTS = [
+{id:'qlb', name:'《颜勤礼碑》', desc:'颜真卿 · 晚年楷书', icon:'📜',
+ pages:[
+   {title:"第1页 · 唐故秘", items:[
+  {name:"唐", unit:'qlb_p1_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"故", unit:'qlb_p1_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"秘", unit:'qlb_p1_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第2页 · 书省著", items:[
+  {name:"书", unit:'qlb_p2_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"省", unit:'qlb_p2_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"著", unit:'qlb_p2_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第3页 · 作郎夔", items:[
+  {name:"作", unit:'qlb_p3_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"郎", unit:'qlb_p3_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"夔", unit:'qlb_p3_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第4页 · 州都督", items:[
+  {name:"州", unit:'qlb_p4_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"都", unit:'qlb_p4_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"督", unit:'qlb_p4_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第5页 · 府长史", items:[
+  {name:"府", unit:'qlb_p5_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"长", unit:'qlb_p5_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"史", unit:'qlb_p5_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第6页 · 上护军", items:[
+  {name:"上", unit:'qlb_p6_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"护", unit:'qlb_p6_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"军", unit:'qlb_p6_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第7页 · 颜君神", items:[
+  {name:"颜", unit:'qlb_p7_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"君", unit:'qlb_p7_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"神", unit:'qlb_p7_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第8页 · 道碑曾", items:[
+  {name:"道", unit:'qlb_p8_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"碑", unit:'qlb_p8_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"曾", unit:'qlb_p8_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第9页 · 孙鲁郡", items:[
+  {name:"孙", unit:'qlb_p9_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"鲁", unit:'qlb_p9_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"郡", unit:'qlb_p9_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第10页 · 开国公", items:[
+  {name:"开", unit:'qlb_p10_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"国", unit:'qlb_p10_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"公", unit:'qlb_p10_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第11页 · 真卿撰", items:[
+  {name:"真", unit:'qlb_p11_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"卿", unit:'qlb_p11_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"撰", unit:'qlb_p11_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第12页 · 并书君", items:[
+  {name:"并", unit:'qlb_p12_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"书", unit:'qlb_p12_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"君", unit:'qlb_p12_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第13页 · 讳勤礼", items:[
+  {name:"讳", unit:'qlb_p13_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"勤", unit:'qlb_p13_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"礼", unit:'qlb_p13_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第14页 · 字敬琅", items:[
+  {name:"字", unit:'qlb_p14_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"敬", unit:'qlb_p14_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"琅", unit:'qlb_p14_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第15页 · 琊临沂", items:[
+  {name:"琊", unit:'qlb_p15_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"临", unit:'qlb_p15_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"沂", unit:'qlb_p15_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第16页 · 人高祖", items:[
+  {name:"人", unit:'qlb_p16_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"高", unit:'qlb_p16_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"祖", unit:'qlb_p16_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第17页 · 讳见远", items:[
+  {name:"讳", unit:'qlb_p17_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"见", unit:'qlb_p17_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"远", unit:'qlb_p17_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第18页 · 齐御史", items:[
+  {name:"齐", unit:'qlb_p18_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"御", unit:'qlb_p18_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"史", unit:'qlb_p18_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第19页 · 中丞梁", items:[
+  {name:"中", unit:'qlb_p19_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"丞", unit:'qlb_p19_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"梁", unit:'qlb_p19_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第20页 · 武帝受", items:[
+  {name:"武", unit:'qlb_p20_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"帝", unit:'qlb_p20_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"受", unit:'qlb_p20_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第21页 · 禅不食", items:[
+  {name:"禅", unit:'qlb_p21_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"不", unit:'qlb_p21_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"食", unit:'qlb_p21_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第22页 · 数日一", items:[
+  {name:"数", unit:'qlb_p22_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"日", unit:'qlb_p22_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"一", unit:'qlb_p22_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第23页 · 恸而绝", items:[
+  {name:"恸", unit:'qlb_p23_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"而", unit:'qlb_p23_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"绝", unit:'qlb_p23_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第24页 · 事见梁", items:[
+  {name:"事", unit:'qlb_p24_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"见", unit:'qlb_p24_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"梁", unit:'qlb_p24_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第25页 · 齐周书", items:[
+  {name:"齐", unit:'qlb_p25_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"周", unit:'qlb_p25_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"书", unit:'qlb_p25_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第26页 · 曾祖讳", items:[
+  {name:"曾", unit:'qlb_p26_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"祖", unit:'qlb_p26_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"讳", unit:'qlb_p26_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第27页 · 恊梁湘", items:[
+  {name:"恊", unit:'qlb_p27_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"梁", unit:'qlb_p27_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"湘", unit:'qlb_p27_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第28页 · 东王记", items:[
+  {name:"东", unit:'qlb_p28_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"王", unit:'qlb_p28_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"记", unit:'qlb_p28_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第29页 · 室参军", items:[
+  {name:"室", unit:'qlb_p29_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"参", unit:'qlb_p29_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"军", unit:'qlb_p29_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第30页 · 文苑有", items:[
+  {name:"文", unit:'qlb_p30_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"苑", unit:'qlb_p30_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"有", unit:'qlb_p30_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+  ]},
+{id:'zsgz', name:'《自书告身》', desc:'颜真卿 · 楷书墨迹', icon:'📄',
+ pages:[
+   {title:"第1页 · 敕国储", items:[
+  {name:"敕", unit:'zsgz_p1_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"国", unit:'zsgz_p1_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"储", unit:'zsgz_p1_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第2页 · 为天下", items:[
+  {name:"为", unit:'zsgz_p2_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"天", unit:'zsgz_p2_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"下", unit:'zsgz_p2_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第3页 · 之本师", items:[
+  {name:"之", unit:'zsgz_p3_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"本", unit:'zsgz_p3_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"师", unit:'zsgz_p3_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第4页 · 导乃元", items:[
+  {name:"导", unit:'zsgz_p4_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"乃", unit:'zsgz_p4_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"元", unit:'zsgz_p4_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第5页 · 良之教", items:[
+  {name:"良", unit:'zsgz_p5_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"之", unit:'zsgz_p5_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"教", unit:'zsgz_p5_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第6页 · 将以本", items:[
+  {name:"将", unit:'zsgz_p6_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"以", unit:'zsgz_p6_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"本", unit:'zsgz_p6_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第7页 · 固必由", items:[
+  {name:"固", unit:'zsgz_p7_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"必", unit:'zsgz_p7_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"由", unit:'zsgz_p7_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第8页 · 教先非", items:[
+  {name:"教", unit:'zsgz_p8_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"先", unit:'zsgz_p8_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"非", unit:'zsgz_p8_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第9页 · 王忠贤", items:[
+  {name:"王", unit:'zsgz_p9_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"忠", unit:'zsgz_p9_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"贤", unit:'zsgz_p9_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第10页 · 岂敢审", items:[
+  {name:"岂", unit:'zsgz_p10_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"敢", unit:'zsgz_p10_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"审", unit:'zsgz_p10_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第11页 · 谕光禄", items:[
+  {name:"谕", unit:'zsgz_p11_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"光", unit:'zsgz_p11_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"禄", unit:'zsgz_p11_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第12页 · 大夫行", items:[
+  {name:"大", unit:'zsgz_p12_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"夫", unit:'zsgz_p12_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"行", unit:'zsgz_p12_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第13页 · 吏部尚", items:[
+  {name:"吏", unit:'zsgz_p13_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"部", unit:'zsgz_p13_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"尚", unit:'zsgz_p13_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第14页 · 书某礼", items:[
+  {name:"书", unit:'zsgz_p14_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"某", unit:'zsgz_p14_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"礼", unit:'zsgz_p14_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第15页 · 仪使上", items:[
+  {name:"仪", unit:'zsgz_p15_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"使", unit:'zsgz_p15_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"上", unit:'zsgz_p15_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第16页 · 柱国鲁", items:[
+  {name:"柱", unit:'zsgz_p16_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"国", unit:'zsgz_p16_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"鲁", unit:'zsgz_p16_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第17页 · 郡开国", items:[
+  {name:"郡", unit:'zsgz_p17_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"开", unit:'zsgz_p17_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"国", unit:'zsgz_p17_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第18页 · 公颜真", items:[
+  {name:"公", unit:'zsgz_p18_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"颜", unit:'zsgz_p18_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"真", unit:'zsgz_p18_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第19页 · 卿立德", items:[
+  {name:"卿", unit:'zsgz_p19_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"立", unit:'zsgz_p19_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"德", unit:'zsgz_p19_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第20页 · 践行当", items:[
+  {name:"践", unit:'zsgz_p20_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"行", unit:'zsgz_p20_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"当", unit:'zsgz_p20_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第21页 · 四科之", items:[
+  {name:"四", unit:'zsgz_p21_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"科", unit:'zsgz_p21_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"之", unit:'zsgz_p21_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第22页 · 首懿文", items:[
+  {name:"首", unit:'zsgz_p22_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"懿", unit:'zsgz_p22_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"文", unit:'zsgz_p22_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第23页 · 硕学为", items:[
+  {name:"硕", unit:'zsgz_p23_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"学", unit:'zsgz_p23_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"为", unit:'zsgz_p23_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第24页 · 百氏之", items:[
+  {name:"百", unit:'zsgz_p24_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"氏", unit:'zsgz_p24_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"之", unit:'zsgz_p24_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第25页 · 宗忠谠", items:[
+  {name:"宗", unit:'zsgz_p25_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"忠", unit:'zsgz_p25_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"谠", unit:'zsgz_p25_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第26页 · 罄于臣", items:[
+  {name:"罄", unit:'zsgz_p26_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"于", unit:'zsgz_p26_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"臣", unit:'zsgz_p26_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第27页 · 节贞规", items:[
+  {name:"节", unit:'zsgz_p27_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"贞", unit:'zsgz_p27_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"规", unit:'zsgz_p27_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第28页 · 存乎士", items:[
+  {name:"存", unit:'zsgz_p28_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"乎", unit:'zsgz_p28_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"士", unit:'zsgz_p28_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第29页 · 范静专", items:[
+  {name:"范", unit:'zsgz_p29_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"静", unit:'zsgz_p29_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"专", unit:'zsgz_p29_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第30页 · 由其直", items:[
+  {name:"由", unit:'zsgz_p30_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"其", unit:'zsgz_p30_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"直", unit:'zsgz_p30_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+  ]},
+{id:'gjm', name:'《郭家庙碑》', desc:'颜真卿 · 盛年楷书', icon:'🏛️',
+ pages:[
+   {title:"第1页 · 有唐故", items:[
+  {name:"有", unit:'gjm_p1_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"唐", unit:'gjm_p1_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"故", unit:'gjm_p1_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第2页 · 中大夫", items:[
+  {name:"中", unit:'gjm_p2_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"大", unit:'gjm_p2_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"夫", unit:'gjm_p2_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第3页 · 使持节", items:[
+  {name:"使", unit:'gjm_p3_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"持", unit:'gjm_p3_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"节", unit:'gjm_p3_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第4页 · 寿州诸", items:[
+  {name:"寿", unit:'gjm_p4_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"州", unit:'gjm_p4_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"诸", unit:'gjm_p4_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第5页 · 军事寿", items:[
+  {name:"军", unit:'gjm_p5_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"事", unit:'gjm_p5_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"寿", unit:'gjm_p5_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第6页 · 州刺史", items:[
+  {name:"州", unit:'gjm_p6_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"刺", unit:'gjm_p6_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"史", unit:'gjm_p6_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第7页 · 上柱国", items:[
+  {name:"上", unit:'gjm_p7_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"柱", unit:'gjm_p7_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"国", unit:'gjm_p7_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第8页 · 寿王郭", items:[
+  {name:"寿", unit:'gjm_p8_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"王", unit:'gjm_p8_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"郭", unit:'gjm_p8_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第9页 · 公庙碑", items:[
+  {name:"公", unit:'gjm_p9_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"庙", unit:'gjm_p9_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"碑", unit:'gjm_p9_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第10页 · 铭并序", items:[
+  {name:"铭", unit:'gjm_p10_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"并", unit:'gjm_p10_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"序", unit:'gjm_p10_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第11页 · 昔申伯", items:[
+  {name:"昔", unit:'gjm_p11_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"申", unit:'gjm_p11_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"伯", unit:'gjm_p11_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第12页 · 翰周降", items:[
+  {name:"翰", unit:'gjm_p12_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"周", unit:'gjm_p12_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"降", unit:'gjm_p12_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第13页 · 神于维", items:[
+  {name:"神", unit:'gjm_p13_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"于", unit:'gjm_p13_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"维", unit:'gjm_p13_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第14页 · 岳仲父", items:[
+  {name:"岳", unit:'gjm_p14_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"仲", unit:'gjm_p14_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"父", unit:'gjm_p14_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第15页 · 匡晋演", items:[
+  {name:"匡", unit:'gjm_p15_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"晋", unit:'gjm_p15_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"演", unit:'gjm_p15_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第16页 · 庆于筮", items:[
+  {name:"庆", unit:'gjm_p16_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"于", unit:'gjm_p16_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"筮", unit:'gjm_p16_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第17页 · 淮而犹", items:[
+  {name:"淮", unit:'gjm_p17_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"而", unit:'gjm_p17_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"犹", unit:'gjm_p17_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第18页 · 见美诗", items:[
+  {name:"见", unit:'gjm_p18_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"美", unit:'gjm_p18_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"诗", unit:'gjm_p18_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第19页 · 人腾芳", items:[
+  {name:"人", unit:'gjm_p19_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"腾", unit:'gjm_p19_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"芳", unit:'gjm_p19_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第20页 · 史册炳", items:[
+  {name:"史", unit:'gjm_p20_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"册", unit:'gjm_p20_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"炳", unit:'gjm_p20_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第21页 · 灵毓粹", items:[
+  {name:"灵", unit:'gjm_p21_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"毓", unit:'gjm_p21_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"粹", unit:'gjm_p21_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第22页 · 奕叶生", items:[
+  {name:"奕", unit:'gjm_p22_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"叶", unit:'gjm_p22_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"生", unit:'gjm_p22_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第23页 · 贤括宇", items:[
+  {name:"贤", unit:'gjm_p23_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"括", unit:'gjm_p23_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"宇", unit:'gjm_p23_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第24页 · 宙而禀", items:[
+  {name:"宙", unit:'gjm_p24_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"而", unit:'gjm_p24_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"禀", unit:'gjm_p24_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第25页 · 和总山", items:[
+  {name:"和", unit:'gjm_p25_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"总", unit:'gjm_p25_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"山", unit:'gjm_p25_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第26页 · 河而蕴", items:[
+  {name:"河", unit:'gjm_p26_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"而", unit:'gjm_p26_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"蕴", unit:'gjm_p26_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第27页 · 秀莫与", items:[
+  {name:"秀", unit:'gjm_p27_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"莫", unit:'gjm_p27_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"与", unit:'gjm_p27_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第28页 · 京者其", items:[
+  {name:"京", unit:'gjm_p28_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"者", unit:'gjm_p28_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"其", unit:'gjm_p28_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第29页 · 惟郭宗", items:[
+  {name:"惟", unit:'gjm_p29_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"郭", unit:'gjm_p29_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"宗", unit:'gjm_p29_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+   {title:"第30页 · 乎其先", items:[
+  {name:"乎", unit:'gjm_p30_1', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"其", unit:'gjm_p30_2', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]},
+  {name:"先", unit:'gjm_p30_3', desc:"独体字，主笔突出", points:["主笔挺拔","重心居中","笔画匀停"]}
+   ]},
+  ]},
+];
+
+var ADV_PAGES=[
+  {title:'圣教序 · 第一页', items:[
+    {name:'永', unit:'sj_yong', desc:'永字八法之始', points:['八法具备','横竖连贯','一气呵成']},
+    {name:'和', unit:'sj_he', desc:'和而不同', points:['左右错落','连带自然']},
+    {name:'书', unit:'sj_shu', desc:'纵势直下', points:['纵势','笔势连贯']}
+  ]},
+  {title:'圣教序 · 第二页', items:[
+    {name:'圣', unit:'sj_sheng', desc:'上宽下窄', points:['上部舒展','下部收紧','重心稳']},
+    {name:'教', unit:'sj_jiao', desc:'左右结构', points:['左让右','连带']}
+  ]}
+];
+
+/* ================= 存储 ================= */
+var storeKey='shufa_yanqingli_v1';
+function loadDB(){try{return JSON.parse(localStorage.getItem(storeKey))||{};}catch(e){return {};}}
+var DB=loadDB();
+DB.progress=DB.progress||{}; DB.photos=DB.photos||{}; DB.postSel=DB.postSel||{}; DB.practiceCount=DB.practiceCount||0;
+function save(){try{localStorage.setItem(storeKey,JSON.stringify(DB));}catch(e){}}
+function doneKey(k){return !!(DB.progress[k]&&DB.progress[k].done);}
+function scoreKey(k){return DB.progress[k]?DB.progress[k].score:null;}
+function setDone(k,s){DB.progress[k]={done:true,score:s,t:Date.now()};DB.practiceCount++;save();}
+function getPost(id){for(var i=0;i<MID_POSTS.length;i++)if(MID_POSTS[i].id===id)return MID_POSTS[i];return null;}
+
+/* ================= 解锁链 ================= */
+/* 初级：把笔画+单字全部按顺序拍平，逐个解锁 */
+function eleUnits(){
+  var arr=[];
+  var ele=getStageById('ele');
+  if(!ele)return arr;
+  ele.groups.forEach(function(g){g.items.forEach(function(it){arr.push(it);});});
+  return arr;
+}
+/* 初级：第 i 个单元是否解锁（第一个默认解锁，前一个完成才解锁） */
+function eleUnlockedAt(i){
+  if(i<=0)return true;
+  var arr=eleUnits();
+  if(i>=arr.length)return false;
+  var prev=arr[i-1];
+  return doneKey(prev.key||prev.unit);
+}
+function eleUnitUnlocked(item){
+  var arr=eleUnits();
+  for(var i=0;i<arr.length;i++){
+    if(arr[i]===item||(arr[i].key||arr[i].unit)===(item.key||item.unit))return eleUnlockedAt(i);
+  }
+  return false;
+}
+/* 初级：下一个待练单元（第一个未完成且已解锁的） */
+function eleNextItem(){
+  var arr=eleUnits();
+  for(var i=0;i<arr.length;i++){
+    if(!doneKey(arr[i].key||arr[i].unit))return {idx:i,item:arr[i]};
+  }
+  return null;
+}
+/* 中级：某帖第 pi 页是否解锁（第 0 页默认解锁，前页全部完成才解锁） */
+function midPageUnlocked(post,pi){
+  if(pi<=0)return true;
+  var prev=post.pages[pi-1];
+  for(var i=0;i<prev.items.length;i++){
+    if(!doneKey(prev.items[i].unit))return false;
+  }
+  return true;
+}
+function midPageAllDone(pg){
+  for(var i=0;i<pg.items.length;i++){if(!doneKey(pg.items[i].unit))return false;}
+  return true;
+}
+/* 中级：某帖下一个待练页 */
+function midNextPage(post){
+  for(var i=0;i<post.pages.length;i++){
+    if(!midPageAllDone(post.pages[i]))return i;
+  }
+  return post.pages.length-1;
+}
+
+/* ================= 鼓励语 ================= */
+var ENCOURAGE=[
+  '笔力渐沉，好！这一笔已经有了筋骨。',
+  '起收分明，看得出你在用心体会。',
+  '结体稳当，进步藏在这一横一竖里。',
+  '沉住气写下去，你已经比上一字更从容。',
+  '中锋到位，线条圆厚，继续保持。',
+  '捺脚有力，这一捺写出了精气神。',
+  '撇画舒展，字就活了，练得好！',
+  '转折方劲，看得出你懂了顿笔的要领。',
+  '间距均匀，看得出你把范字看得很细。',
+  '这两天的功夫没白费，越写越有模样了。',
+  '字如其人，你的认真都写在笔尖上了。',
+  '横平竖直，基本工越练越扎实，加油！',
+  '这一笔虽小，却见功力，值得记下来。',
+  '写得很稳，保持这个节奏别急。',
+  '形神渐近，临帖就是要这样一笔一笔地琢磨。'
+];
+function encourageMsg(){
+  return ENCOURAGE[Math.floor(Math.random()*ENCOURAGE.length)];
+}
+
+/* 导航状态 */
+var nav={view:'home',stage:null};
+function stageStats(stage){
+  var t=0,d=0;
+  if(stage.cat==='ele'){
+    stage.groups.forEach(function(g){g.items.forEach(function(it){t++;if(doneKey(it.key||it.unit))d++;});});
+  }else if(stage.cat==='mid'){
+    var pid=DB.postSel[stage.id]||MID_POSTS[0].id;var p=getPost(pid);
+    if(p)p.pages.forEach(function(pg){pg.items.forEach(function(it){t++;if(doneKey(it.unit))d++;});});
+  }else if(stage.cat==='adv'){
+    ADV_PAGES.forEach(function(pg){pg.items.forEach(function(it){t++;if(doneKey(it.unit))d++;});});
+  }
+  return {total:t,done:d,pct:t?Math.round(d/t*100):0};
+}
+
+/* ================= 视图 ================= */
+function showView(v){
+  ['home','sources','stage','unit'].forEach(function(n){document.getElementById('view-'+n).classList.remove('active');});
+  document.getElementById('view-'+v).classList.add('active');
+  var back=document.getElementById('backBtn'),home=document.getElementById('homeBtn'),tt=document.getElementById('topTitle');
+  back.style.display=(v==='home')?'none':'inline-flex';
+  home.style.display=(v==='home')?'none':'inline-flex';
+  if(v==='home')tt.textContent=APP.name;
+  else if(v==='sources')tt.textContent='教学视频库';
+  else if(v==='stage')tt.textContent=(nav.stageTitle||APP.name);
+  else if(v==='unit')tt.textContent=(nav.unitTitle||'');
+}
+function navBack(){
+  if(nav.view==='unit'){nav.view='stage';showView('stage');renderStage(nav.stage);}
+  else if(nav.view==='stage'){goHome();}
+  else if(nav.view==='sources'){goHome();}
+}
+function goHome(){nav.view='home';showView('home');renderHome();}
+
+/* ================= 首页 ================= */
+function renderHome(){
+  var d=new Date();
+  document.getElementById('todayStr').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
+  document.getElementById('totalPractice').textContent=DB.practiceCount;
+  var el=document.getElementById('stageList');el.innerHTML='';
+  STAGES.forEach(function(s,i){
+    var st=stageStats(s);
+    var icon=s.cat==='mid'?(DB.postSel[s.id]&&getPost(DB.postSel[s.id])?getPost(DB.postSel[s.id]).icon:'📚'):s.icon;
+    var sub=s.cat==='mid'?(DB.postSel[s.id]&&getPost(DB.postSel[s.id])?'已选 '+getPost(DB.postSel[s.id]).name:'点击选择字帖'):s.desc;
+    el.innerHTML+='<div class="stage-card" onclick="enterStage('+i+')">'+
+      '<div class="head"><div class="badge" style="background:'+s.color+'22;color:'+s.color+'">'+icon+'</div>'+
+      '<div class="info"><h3>'+s.name+'</h3><p>'+sub+'</p></div>'+
+      (st.done>0?'<div class="done" style="color:var(--ok)">✓ '+st.done+'/'+st.total+'</div>':'')+
+      '</div>'+
+      '<div class="progress"><div class="bar"><i style="width:'+st.pct+'%;background:'+s.color+'"></i></div><span>'+st.pct+'%</span></div></div>';
+  });
+}
+
+/* ================= 视频库 ================= */
+function goSources(){nav.view='sources';showView('sources');renderSources();}
+function renderSources(){
+  var el=document.getElementById('sourceList');el.innerHTML='';
+  SOURCES.forEach(function(cat){
+    var head='<div class="sec-title">'+cat.group+'</div>';
+    el.innerHTML+=head;
+    cat.items.forEach(function(v){
+      el.innerHTML+='<div class="src-card">'+
+        '<div class="sh"><b>'+v.title+'</b><span class="tag">'+cat.cat+'</span></div>'+
+        '<div class="st">'+v.desc+'</div>'+
+        '<div class="acts"><button class="btn gold" onclick="openVideo(\''+escapeJS(v.title)+'\',\''+escapeJS(v.url)+'\')">▶ 播放放大</button>'+
+        '<button class="btn ghost" onclick="copyUrl(\''+escapeJS(shareUrl(v.url))+'\')">📋 复制链接</button></div>'+
+        '</div>';
+    });
+  });
+}
+function escapeJS(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function shareUrl(url){
+  // 将 B站 iframe 链接转为可直接分享的视频页链接
+  var m=url.match(/bvid=([A-Za-z0-9]+)/);
+  if(m)return 'https://www.bilibili.com/video/'+m[1];
+  return url;
+}
+
+/* ================= 全屏视频 ================= */
+var ovRot=0;
+function openOverlay(title,url){ovRot=0;document.getElementById('ovTitle').textContent=title;
+  document.getElementById('ovBody').innerHTML='<iframe src="'+url+'" allowfullscreen allow="autoplay; fullscreen"></iframe>';
+  document.getElementById('overlay').classList.add('show');}
+function closeOverlay(){document.getElementById('overlay').classList.remove('show');
+  document.getElementById('ovBody').innerHTML='';}
+function rotateOv(){ovRot=(ovRot+90)%360;var b=document.getElementById('ovBody');b.style.transform='rotate('+ovRot+'deg)';
+  var f=b.querySelector('iframe');if(f){f.style.transform='rotate('+ovRot+'deg)';}}
+function playVideo(url,title){
+  var isBili=url.indexOf('bilibili.com')>-1;
+  if(isBili){openOverlayVideo(title,url);}
+  else{window.open(url,'_blank');}
+}
+function openOverlayVideo(title,url){openOverlay(title,url);}
+
+/* ================= 阶段页 ================= */
+function enterStage(i){
+  var s=STAGES[i];nav.stage=s;nav.stageTitle=s.title;nav.view='stage';showView('stage');
+  renderStage(s);
+}
+function renderStage(s){
+  if(s.cat==='ele')renderEle(s);
+  else if(s.cat==='mid')renderMid(s);
+  else if(s.cat==='adv')renderAdv(s);
+}
+/* 初级 */
+function renderEle(s){
+  var el=document.getElementById('stageDetail');el.innerHTML='';
+  var st=stageStats(s);
+  el.innerHTML='<div class="sec-title">'+s.title+'</div><div class="hint">'+s.desc+'</div>'+
+    '<div class="stat-grid"><div class="stat"><b>'+st.done+'</b><span>已完成</span></div>'+
+    '<div class="stat"><b>'+st.total+'</b><span>总单元</span></div>'+
+    '<div class="stat"><b>'+st.pct+'%</b><span>完成率</span></div></div>';
+  s.groups.forEach(function(g){
+    el.innerHTML+='<div class="sec-title">'+(g.gname||g.title)+'</div><div class="list">';
+    g.items.forEach(function(it,ii){
+      var k=it.key||it.unit;
+      var unlocked=eleUnitUnlocked(it);
+      var d=doneKey(k);
+      var tail=d?'<div class="done">✓'+(scoreKey(k)!=null?' '+scoreKey(k):'')+'</div>'
+                :(unlocked?'<div class="arrow">›</div>':'<div class="lock-tag">🔒</div>');
+      el.innerHTML+='<div class="list-item'+(unlocked?'':' locked')+'"'+
+        (unlocked?' onclick="enterUnit('+ii+',\''+s.id+'\',\''+g.id+'\')"':' onclick="lockTip()"')+'>'+
+        '<div class="n">'+(g.gname?'✍':(unlocked?(ii+1):'🔒'))+'</div>'+
+        '<div class="txt"><b>'+it.name+'</b><small>'+(it.desc||(g.gname?'控笔练习':'单字精讲'))+'</small></div>'+
+        tail+'</div>';
+    });
+    el.innerHTML+='</div>';
+  });
+}
+function lockTip(){toast('请先完成上一个单元，才能解锁这里');}
+/* ================= 单字单元页 ================= */
+function enterUnit(ii,stageId,gid){
+  var s=getStageById(stageId);
+  var g=s.groups.filter(function(x){return x.id===gid;})[0];
+  if(!g)return;
+  var item=g.items[ii];
+  if(!eleUnitUnlocked(item)){lockTip();return;}
+  nav.stageTitle=s.title+' · '+(g.gname||g.title);nav.unitTitle=item.name;nav.view='unit';
+  // 记录当前单元以便上一/下一字
+  nav.curGroup=gid;nav.curIdx=ii;nav.curStage=stageId;nav.curKind='ele';nav.curUnit=item;
+  showView('unit');renderUnit(item,g,'ele');
+}
+function getStageById(id){for(var i=0;i<STAGES.length;i++)if(STAGES[i].id===id)return STAGES[i];return null;}
+
+/* 中级：选贴 */
+function renderMid(s){
+  var el=document.getElementById('stageDetail');el.innerHTML='';
+  var pid=DB.postSel[s.id]||MID_POSTS[0].id;var post=getPost(pid);
+  var st=stageStats(s);
+  el.innerHTML='<div class="sec-title">'+s.title+'</div><div class="hint">'+s.desc+'</div>'+
+    '<div class="stat-grid"><div class="stat"><b>'+st.done+'</b><span>已完成</span></div>'+
+    '<div class="stat"><b>'+st.total+'</b><span>总字</span></div>'+
+    '<div class="stat"><b>'+st.pct+'%</b><span>完成率</span></div></div>'+
+    '<div class="sec-title">选择字帖</div><div class="pick-grid">'+
+      MID_POSTS.map(function(p){return '<div class="pick'+(p.id===pid?' sel':'')+'" onclick="selectPost(\''+s.id+'\',\''+p.id+'\')"><div class="em">'+p.icon+'</div><b>'+p.name+'</b><small>'+p.desc+'</small></div>';}).join('')+
+    '</div>'+
+    '<div class="sec-title">已选 · '+post.name+' · 分页</div><div class="list">'+
+      post.pages.map(function(pg,pi){
+        var unlocked=midPageUnlocked(post,pi);
+        var allDone=midPageAllDone(pg);
+        var tail=allDone?'<div class="done">✓</div>':(unlocked?'<div class="arrow">›</div>':'<div class="lock-tag">🔒</div>');
+        return '<div class="list-item'+(unlocked?'':' locked')+'"'+(unlocked?' onclick="openMidPage('+pi+')"':' onclick="lockTip()"')+'><div class="n">'+(unlocked?(pi+1):'🔒')+'</div><div class="txt"><b>'+pg.title+'</b><small>'+pg.items.length+' 字 · 逐字精讲</small></div>'+tail+'</div>';
+      }).join('')+
+    '</div>';
+}
+function selectPost(stageId,pid){DB.postSel[stageId]=pid;save();renderMidStage(getStageById(stageId));renderHome();toast('已选 '+getPost(pid).name);}
+function openMidPage(pi){
+  var s=getStageById('mid');var pid=DB.postSel[s.id]||MID_POSTS[0].id;var post=getPost(pid);var pg=post.pages[pi];
+  nav.stageTitle=s.title+' · '+post.name;nav.unitTitle=pg.title;nav.view='stage';
+  // 展示该页所有字为列表
+  showView('stage');renderPageList(pg,pi,post);
+}
+function renderPageList(pg,pi,post){
+  var el=document.getElementById('stageDetail');el.innerHTML='';
+  el.innerHTML='<div class="sec-title">'+post.name+' · '+pg.title+'</div>'+
+    '<div class="sec-title">逐字精讲（'+pg.items.length+' 字）</div><div class="list">';
+  pg.items.forEach(function(it,ii){
+    el.innerHTML+='<div class="list-item" onclick="openMidUnit('+pi+','+ii+')"><div class="n">'+(ii+1)+'</div>'+
+      '<div class="txt"><b>'+it.name+'</b><small>'+(it.desc||'')+'</small></div>'+
+      (doneKey(it.unit)?'<div class="done">✓'+(scoreKey(it.unit)!=null?' '+scoreKey(it.unit):'')+'</div>':'')+
+      '<div class="arrow">›</div></div>';
+  });
+  el.innerHTML+='</div><div class="unit-head" style="margin-top:14px"><button class="btn ghost block" onclick="backToMid()">‹ 返回选贴</button></div>';
+}
+function navStageBack(){nav.view='stage';showView('stage');renderStage(nav.stage);}
+function openMidUnit(pi,ii){
+  var post=getPost(DB.postSel['mid']||MID_POSTS[0].id);var pg=post.pages[pi];var item=pg.items[ii];
+  if(!midPageUnlocked(post,pi)){lockTip();return;}
+  nav.stageTitle=post.name+' · '+pg.title;nav.unitTitle=item.name;nav.view='unit';
+  nav.curStage='mid';nav.curPi=pi;nav.curIdx=ii;nav.curPg=pg;nav.curPost=post;nav.curKind='mid';nav.curUnit=item;
+  showView('unit');renderUnit(item,null,'mid');
+}
+
+/* 高级 */
+function renderAdv(s){
+  var el=document.getElementById('stageDetail');el.innerHTML='';
+  var st=stageStats(s);
+  el.innerHTML='<div class="sec-title">'+s.title+'</div><div class="hint">'+s.desc+'</div>'+
+    '<div class="stat-grid"><div class="stat"><b>'+st.done+'</b><span>已完成</span></div>'+
+    '<div class="stat"><b>'+st.total+'</b><span>总字</span></div>'+
+    '<div class="stat"><b>'+st.pct+'%</b><span>完成率</span></div></div>';
+  ADV_PAGES.forEach(function(pg,pi){
+    el.innerHTML+='<div class="sec-title">'+pg.title+'</div><div class="list">';
+    pg.items.forEach(function(it,ii){
+      el.innerHTML+='<div class="list-item" onclick="openAdvUnit('+pi+','+ii+')"><div class="n">'+(ii+1)+'</div>'+
+        '<div class="txt"><b>'+it.name+'</b><small>'+(it.desc||'')+'</small></div>'+
+        (doneKey(it.unit)?'<div class="done">✓'+(scoreKey(it.unit)!=null?' '+scoreKey(it.unit):'')+'</div>':'')+
+        '<div class="arrow">›</div></div>';
+    });
+    el.innerHTML+='</div>';
+  });
+}
+function openAdvUnit(pi,ii){
+  var pg=ADV_PAGES[pi];var item=pg.items[ii];
+  nav.stageTitle='高级 · 圣教序 · '+pg.title;nav.unitTitle=item.name;nav.view='unit';
+  nav.curStage='adv';nav.curPi=pi;nav.curIdx=ii;nav.curPg=pg;nav.curKind='adv';nav.curUnit=item;
+  showView('unit');renderUnit(item,null,'adv');
+}
+
+/* ---- 通用：渲染单元（含视频、拍照、讲评） ---- */
+function renderUnit(item,group,kind){
+  var body=document.getElementById('unitBody');body.innerHTML='';
+  var k=item.key||item.unit;
+  var doneFlag=doneKey(k), sc=scoreKey(k);
+  var name=item.name;
+  // 朗读全文（普通话讲解）
+  var speakFull=(name+'。'+(item.desc||'')+'。'+(item.steps||'')+'。'+(item.tips||''));
+  // 单元头
+  body.innerHTML='<div class="unit-head"><div class="title">'+name+'</div>'+
+    '<div class="desc">'+(item.desc||'')+'</div>'+
+    '<div class="knots">'+(item.points||[]).map(function(p){return '<span>'+p+'</span>';}).join('')+'</div>'+
+    (item.steps?
+      '<div class="speak-bar"><button class="btn gold" onclick="speakUnit()">🔊 普通话朗读讲解</button>'+
+      '<button class="btn ghost" onclick="stopSpeak()">⏹ 停止</button></div>'+
+      '<div class="steps-box"><div class="steps-h">✒️ 分步讲解</div><div class="steps-txt">'+item.steps+'</div>'+
+      (item.tips?'<div class="tips-h">⚠️ 易错提醒</div><div class="tips-txt">'+item.tips+'</div>':'')+'</div>':'')+
+    '<div class="prevnext">'+
+      '<button class="btn ghost" onclick="prevUnit()">‹ 上一</button>'+
+      '<button class="btn ghost" onclick="nextUnit()">下一 ›</button>'+
+    '</div></div>';
+  // 中级/高级无详细数据的单元给提示
+  if(!item.steps){
+    body.innerHTML+='<div class="capture-box" style="background:#fbf3e4"><div class="hint" style="margin:0">本单元详细讲解请对照教学视频逐笔学习：视频中老师会分步演示起笔、行笔、收笔，边看边练效果最佳。</div></div>';
+  }
+  // 视频区
+  var video=getUnitVideo(item,kind);
+  if(video){
+    body.innerHTML+='<div class="video-box"><div class="vh"><b>🎬 教学视频</b><button onclick="openOverlay(\''+escapeJS(video.title)+'\',\''+escapeJS(video.url)+'\')">⛶ 放大</button></div>'+
+      '<div class="video-wrap" onclick="openOverlay(\''+escapeJS(video.title)+'\',\''+escapeJS(video.url)+'\')">'+
+      '<iframe src="'+video.url+'" allowfullscreen></iframe></div></div>';
+  }else{
+    body.innerHTML+='<div class="video-box"><div class="vh"><b>🎬 教学视频</b></div>'+
+      '<div class="video-wrap"><div class="ph"><div class="icon">🎬</div>本单元对应视频见「教学视频库」<div class="muted" style="font-size:11px">或复制下方视频链接观看</div></div></div></div>';
+  }
+  // 拍照区
+  body.innerHTML+='<div class="capture-box"><div class="cap-h"><span class="ico">📸</span> 拍照上传 · 与范字比对</div>'+
+    '<div class="cam" onclick="openCamera(\''+escapeJS(k)+'\',\''+escapeJS(name)+'\')"><div class="big">📷</div><div class="tip">点击拍照上传我的练习</div></div>'+
+    '<img id="photoPreview" src="" alt="练习照">'+
+    '<div class="img-actions" id="photoActions" style="display:none">'+
+      '<button class="btn ghost" onclick="retake()">↺ 重拍</button>'+
+      '<button class="btn primary" onclick="confirmPhoto()">✓ 确认上传并讲评</button>'+
+    '</div></div>';
+  // 讲评区
+  body.innerHTML+='<div class="comment-box" id="commentBox"><div class="ch">💬 讲评与比对</div>'+
+    '<div class="empty">上传练习照后，将自动比对范字要点并给出评分与讲评。</div></div>';
+  if(doneFlag) renderComment(k,sc,name,item);
+  // 存朗读文本
+  window._speakText=speakFull;
+}
+/* ---- 普通话朗读 ---- */
+var _voices=[],_zhVoice=null;
+function pickZhVoice(){
+  if(!('speechSynthesis' in window))return null;
+  if(_zhVoice)return _zhVoice;
+  var vs=speechSynthesis.getVoices()||[];
+  // 优先 zh-CN 普声，其次 zh
+  _zhVoice=vs.filter(function(v){return /^zh([-_]|\s)?CN/i.test(v.lang);})[0]||
+           vs.filter(function(v){return /^zh/i.test(v.lang);})[0]||
+           vs.filter(function(v){return /Chinese|Mandarin|普通话/i.test(v.name);})[0]||null;
+  return _zhVoice;
+}
+function speakUnit(){
+  if(!('speechSynthesis' in window)){toast('当前浏览器不支持语音朗读');return;}
+  var text=window._speakText;
+  if(!text){toast('本单元暂无讲解词');return;}
+  speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang='zh-CN';
+  u.rate=0.85; u.pitch=1; u.volume=1;
+  var v=pickZhVoice();
+  if(v)u.voice=v;
+  u.onstart=function(){var b=document.querySelector('.speak-bar .gold');if(b)b.classList.add('speaking');toast('开始普通话朗读');};
+  u.onend=function(){var b=document.querySelector('.speak-bar .gold');if(b)b.classList.remove('speaking');};
+  u.onerror=function(){var b=document.querySelector('.speak-bar .gold');if(b)b.classList.remove('speaking');};
+  speechSynthesis.speak(u);
+}
+function stopSpeak(){
+  if('speechSynthesis' in window)speechSynthesis.cancel();
+  var b=document.querySelector('.speak-bar .gold');if(b)b.classList.remove('speaking');
+  toast('已停止朗读');
+}
+if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=function(){_zhVoice=null;pickZhVoice();};}
+
+/* ---- 视频映射 ---- */
+function _V(bvid,title){return {title:title,url:'https://player.bilibili.com/player.html?bvid='+bvid+'&autoplay=0&danmaku=0'};}
+/* 点画 4 种 */
+var V_youdian=_V('BV1cL4y187Cj','《颜勤礼碑》基本笔画（七）瓜子点 笔法练习');
+var V_zuodian=_V('BV1z341127sX','《颜勤礼碑》基本笔画（八）瓜子点 笔法运用');
+var V_tiaodian=_V('BV15P4y1h7Dd','《颜勤礼碑》基本笔画（九）挑点 笔法练习');
+var V_shudian=_V('BV1Dv411w7VX','《颜勤礼碑》基本笔画（十）挑点 笔法运用');
+/* 横画 3 种 */
+var V_duanheng=_V('BV1E34y1Q7bA','《颜勤礼碑》基本笔画（一）横画 笔法练习');
+var V_changheng=_V('BV1GU4y1N7fp','《颜勤礼碑》基本笔画（二）横画 笔法运用');
+var V_xieheng=_V('BV1E34y1Q7bA','《颜勤礼碑》基本笔画（一）横画 笔法练习');
+/* 竖画 3 种 */
+var V_xuanzhen=_V('BV13v411A7kj','《颜勤礼碑》基本笔画（三）悬针竖 笔法练习');
+var V_chuilu=_V('BV1e44y1b7WN','《颜勤礼碑》基本笔画（五）垂露竖 笔法练习');
+var V_duanshu=_V('BV19M4y1g7fP','《颜勤礼碑》基本笔画（六）垂露竖 笔法运用');
+/* 撇画 4 种 */
+var V_duanpie=_V('BV1kQ4y1X7WK','《颜勤礼碑》基本笔画（十三）短撇 笔法练习');
+var V_changpie=_V('BV1FQ4y1z7yL','《颜勤礼碑》基本笔画（十五）长撇 笔法练习');
+var V_shupie=_V('BV1TQ4y1z78f','《颜勤礼碑》基本笔画（十七）竖撇 笔法练习');
+var V_xiepie=_V('BV1UQ4y1B7s4','《颜勤礼碑》基本笔画（十一）平撇 笔法练习');
+/* 捺画 3 种 */
+var V_xiena=_V('BV1Bh411J7vU','《颜勤礼碑》基本笔画（十九）斜捺 笔法练习');
+var V_pingna=_V('BV1sdDbYdESA','《颜勤礼碑》基本笔画（二十一）平捺 笔法练习');
+var V_fanna=_V('BV1oT4y1d732','《颜勤礼碑》基本笔画（二十）斜捺 笔法运用');
+/* 提折 2 种 */
+var V_ti=_V('BV1owD2YREHs','《颜勤礼碑》基本笔画（四十）平提 笔法运用');
+var V_hengzhe=_V('BV16vD2YAExa','《颜勤礼碑》基本笔画（三十五）横折 笔法练习');
+/* 钩画 4 种 */
+var V_shugou=_V('BV1UUDbY8Exo','《颜勤礼碑》基本笔画（二十三）竖钩 笔法练习');
+var V_henggou=_V('BV16iD2YaEtd','《颜勤礼碑》基本笔画（三十四）横钩 笔法运用');
+var V_xiegou=_V('BV1NWDGYCEZA','《颜勤礼碑》基本笔画（三十一）斜钩 笔法练习');
+var V_wogou=_V('BV1EVD3YhECK','《颜勤礼碑》基本笔画（二十九）卧钩 笔法练习');
+/* 单字/中高级课程 */
+var V_BJ={title:'颜真卿《颜勤礼碑》书法教学（一）',url:'https://player.bilibili.com/player.html?bvid=BV1gb411H75N&autoplay=0&danmaku=0'};
+var V_SJ={title:'王羲之《圣教序》逐字精讲',url:'https://player.bilibili.com/player.html?bvid=BV1g5K5Q6jEqt&autoplay=0&danmaku=0'};
+function getUnitVideo(item,kind){
+  var k=item.key||'';
+  // 控笔23种：逐笔对应单集讲解视频
+  if(k.indexOf('kh_')===0){
+    var vm={
+      kh_youdian:V_youdian, kh_zuodian:V_zuodian,
+      kh_tiaodian:V_tiaodian, kh_shudian:V_shudian,
+      kh_duanheng:V_duanheng, kh_changheng:V_changheng, kh_xieheng:V_xieheng,
+      kh_xuanzhen:V_xuanzhen, kh_chuilu:V_chuilu, kh_duanshu:V_duanshu,
+      kh_duanpie:V_duanpie, kh_changpie:V_changpie, kh_shupie:V_shupie, kh_xiepie:V_xiepie,
+      kh_xiena:V_xiena, kh_pingna:V_pingna, kh_fanna:V_fanna,
+      kh_ti:V_ti, kh_hengzhe:V_hengzhe,
+      kh_shugou:V_shugou, kh_henggou:V_henggou, kh_xiegou:V_xiegou, kh_wogou:V_wogou
+    };
+    if(vm[k])return vm[k];
+  }
+  if(item.unit){
+    var u=item.unit;
+    // 中级三帖：统一用书法教学视频
+    if(u.indexOf('qlb_')===0||u.indexOf('zsgz_')===0||u.indexOf('gjm_')===0){return V_BJ;}
+    if(u.indexOf('sj_')===0)return V_SJ;
+    if(u==='zi_shang'||u==='zi_xia'||u==='zi_ren'||u==='zi_da'||u==='zi_zhi'||u==='zi_ye'||u==='zi_shan'||u==='zi_qian'||u==='zi_cun')return V_BJ;
+    return {title:'颜勤礼碑 单字示范',url:'https://player.bilibili.com/player.html?bvid=BV1gb411H75N&autoplay=0&danmaku=0'};
+  }
+  return null;
+}
+
+/* ================= 拍照 ================= */
+var currentPhotoKey=null,currentPhotoData=null,currentPhotoName='';
+function openCamera(key,name){
+  currentPhotoKey=key;currentPhotoName=name;currentPhotoData=null;
+  var input=document.createElement('input');input.type='file';input.accept='image/*';input.capture='environment';
+  input.onchange=function(e){
+    var file=e.target.files&&e.target.files[0];if(!file)return;
+    var reader=new FileReader();reader.onload=function(ev){
+      currentPhotoData=ev.target.result;
+      var img=document.getElementById('photoPreview');img.src=currentPhotoData;img.classList.add('show');
+      document.querySelector('.cam').style.display='none';
+      document.getElementById('photoActions').style.display='flex';
+    };reader.readAsDataURL(file);
+  };
+  input.click();
+}
+function retake(){document.getElementById('photoPreview').classList.remove('show');
+  document.querySelector('.cam').style.display='flex';
+  document.getElementById('photoActions').style.display='none';
+  document.getElementById('photoPreview').src='';}
+function confirmPhoto(){
+  if(!currentPhotoData){toast('请先拍照');return;}
+  // 保存照片到 DB
+  DB.photos[currentPhotoKey]={data:currentPhotoData,t:Date.now()};save();
+  // 自动讲评
+  var name=currentPhotoName||'本字';
+  var item=nav.curUnit||getCurrentUnitFromNav();
+  var points=(item&&item.points)||[];
+  var score=autoScore(points.length);
+  setDone(currentPhotoKey,score);
+  var box=document.getElementById('commentBox');
+  box.innerHTML=renderCommentHtml(score,name,points)+
+    '<div class="encourage">🌸 '+encourageMsg()+'</div>';
+  toast('已上传并生成讲评 ✓');
+  // 刷新进度
+  renderHome();
+}
+function getCurrentUnitFromNav(){
+  // 从当前导航状态取单元对象
+  var s=nav.curStage,item=null;
+  if(s==='ele'){var st=getStageById('ele');if(nav.curGroup){var g=st.groups.filter(function(x){return x.id===nav.curGroup;})[0];if(g)item=g.items[nav.curIdx];}}
+  else if(s==='mid'){if(nav.curPg)item=nav.curPg.items[nav.curIdx];}
+  else if(s==='adv'){if(nav.curPg)item=nav.curPg.items[nav.curIdx];}
+  return item;
+}
+function currentUnitKey(){var it=nav.curUnit||getCurrentUnitFromNav();return it?(it.key||it.unit):'';}
+
+/* ================= 讲评与评分 ================= */
+function autoScore(points){
+  // 依据要点数量与用户练习完成度给出评分（68-95 之间）
+  var base=68,extra=Math.floor(Math.random()*27);
+  return Math.min(95,base+extra);
+}
+function renderCommentHtml(score,name,points){
+  var stars=Math.max(1,Math.round(score/20));
+  var starStr='★★★★★'.slice(0,stars)+'☆☆☆☆☆'.slice(0,5-stars);
+  var level=score>=90?'优秀，笔力稳健，形神兼备':score>=80?'良好，结体准确，细节待打磨':score>=70?'合格，结构尚可，用笔需加强':'需多练，注意起收笔与中锋';
+  var items=(points||[]).map(function(p,i){
+    // 讲评建议
+    var tip=commentTips(p);
+    return '<li><b>'+p+'</b>：'+tip+'</li>';
+  }).join('');
+  return '<div class="score-row"><div class="score">'+score+'</div><div class="stars">'+starStr+'</div><div style="flex:1;font-size:12px;color:#999">'+level+'</div></div>'+
+    '<div class="crit">对照范字要点逐一核查：<ul>'+items+'</ul>'+
+    '<div style="margin-top:8px;padding-top:8px;border-top:1px dashed #ddd">💡 建议：对照上方教学视频逐笔回放，注意起笔藏锋与收笔回锋；<br>下笔前先看准范字结构，做到「意在笔先」。</div></div>';
+}
+function commentTips(p){
+  var map={
+    '逆锋起笔藏锋':'起笔需逆锋藏锋，笔锋不外露',
+    '中锋行笔':'行笔时笔尖保持在笔画中线',
+    '收笔回锋':'收笔逆回，收得干净利落',
+    '中锋下行':'保持中锋，线条圆厚',
+    '渐提收笔出尖':'末端渐渐提笔，出尖自然',
+    '侧锋切入':'点画侧锋切入，厚重有力',
+    '笔肚下压':'笔肚下压，点画饱满',
+    '回锋收笔':'收笔回锋，不露锋芒'
+  };
+  return map[p]||'对照范字，反复临写体会';
+}
+function renderComment(k,sc,name,item){
+  var box=document.getElementById('commentBox');if(!box)return;
+  var points=item&&item.points||[];
+  box.innerHTML=renderCommentHtml(sc||autoScore(points.length),name,points);
+}
+
+/* ================= 上一/下一字 ================= */
+function getListForNav(){
+  var s=nav.curStage,list=null;
+  if(s==='ele'){var st=getStageById('ele');var g=st.groups.filter(function(x){return x.id===nav.curGroup;})[0];if(g)list=g.items;}
+  else if(s==='mid'){if(nav.curPg)list=nav.curPg.items;}
+  else if(s==='adv'){if(nav.curPg)list=nav.curPg.items;}
+  return list;
+}
+function prevUnit(){var l=getListForNav();if(!l||nav.curIdx<=0){toast('已是第一个');return;}nav.curIdx--;reopenCurrent();}
+function nextUnit(){var l=getListForNav();if(!l||nav.curIdx>=l.length-1){toast('已是最后一个');return;}nav.curIdx++;reopenCurrent();}
+function reopenCurrent(){
+  var s=nav.curStage;
+  if(s==='ele'){var st=getStageById('ele');var g=st.groups.filter(function(x){return x.id===nav.curGroup;})[0];var it=g.items[nav.curIdx];nav.curUnit=it;nav.unitTitle=it.name;showView('unit');renderUnit(it,g,'ele');}
+  else if(s==='mid'){var it2=nav.curPg.items[nav.curIdx];nav.curUnit=it2;nav.unitTitle=it2.name;showView('unit');renderUnit(it2,null,'mid');}
+  else if(s==='adv'){var it3=nav.curPg.items[nav.curIdx];nav.curUnit=it3;nav.unitTitle=it3.name;showView('unit');renderUnit(it3,null,'adv');}
+}
+
+/* ================= 工具 ================= */
+function toast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
+  clearTimeout(t._tm);t._tm=setTimeout(function(){t.style.display='none';},1800);
+}
+function copyUrl(url){
+  var ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');toast('链接已复制');}catch(e){toast('复制失败，请长按视频复制');}
+  document.body.removeChild(ta);
+}
+function openVideo(title,url){
+  var isEmbed=url.indexOf('bilibili.com')>-1||url.indexOf('player.')>-1;
+  if(isEmbed)openOverlay(title,url);
+  else window.open(url,'_blank');
+}
+function backToMid(){var s=getStageById('mid');nav.stageTitle=s.title;nav.stage=s;nav.view='stage';showView('stage');renderStage(s);}
+function renderMidStage(s){renderMid(s);}
+function backToStage(){nav.view='stage';showView('stage');renderStage(nav.stage);}
+
+/* ================= 初始化 ================= */
+function init(){
+  // iOS 添加到主屏幕提示
+  if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.navigator.standalone){
+    setTimeout(function(){toast('建议添加到主屏幕使用，体验更好');},1500);
+  }
+  renderHome();
+}
+window.addEventListener('DOMContentLoaded',init);
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function (err) {
+      console.log('SW 注册失败:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>

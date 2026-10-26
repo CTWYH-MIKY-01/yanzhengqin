@@ -1,0 +1,31 @@
+{
+  "name": "书法进阶练习 · 颜勤礼碑",
+  "short_name": "书法进阶",
+  "description": "颜真卿《颜勤礼碑》书法进阶练习：七大类23种基本笔画、一百个经典单字、三阶段系统训练（颜勤礼碑/自书告身/郭家庙碑），拍照上传比对讲评。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f0e4",
+  "theme_color": "#7a3b2e",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
